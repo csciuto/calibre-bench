@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Calibre Bench</title>
+<meta name="description" content="An interactive plan drawing of a mechanical watch movement: gear train, Swiss lever escapement, keyless works, calendars, chronograph and automatic winding, with every part explained and sourced.">
+<meta property="og:title" content="Calibre Bench">
+<meta property="og:description" content="An interactive plan drawing of a mechanical watch movement: gear train, Swiss lever escapement, keyless works, calendars, chronograph and automatic winding, with every part explained and sourced.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://corey.sciu.to/calibre-bench/">
+<meta property="og:image" content="https://corey.sciu.to/calibre-bench/preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Calibre Bench</h1>
+    <span class="sub">Swiss lever · 28,800 A/h · plan view, laid flat</span>
+    <span id="version" title="Version">dev</span>
+  </header>
+
+  <div class="main">
+  <div class="stage">
+    <svg id="plan" role="group" aria-label="Plan drawing of the watch gear train. Each part is a button that explains itself."></svg>
+    <div class="tools">
+      <button id="vFit">Whole movement</button>
+      <button id="vEsc">Escapement</button>
+      <button id="vMw">Dial side</button>
+      <button id="vChr" hidden>Chronograph</button>
+      <button id="vAuto" hidden>Winding</button>
+    </div>
+
+    <div class="zoom" role="group" aria-label="Zoom">
+      <button id="zoomIn" aria-label="Zoom in">+</button>
+      <button id="zoomOut" aria-label="Zoom out">−</button>
+      <button id="helpMode" class="helpbtn" aria-pressed="false" aria-label="Explain mode: tap a part to explain it" title="Explain a part (?)">?</button>
+    </div>
+    <div class="readout"><span id="readout">—</span><button class="info" data-term="beat" aria-label="What is a beat?">i</button></div>
+    <section class="face" id="face" aria-label="Watch face and running speed">
+      <div class="facehead">
+        <span class="big" id="handsRead">--:--:--</span>
+        <button class="facemin" id="faceMin" aria-expanded="true" aria-controls="dial" aria-label="Hide the dial" title="Hide the dial">▾</button>
+      </div>
+      <svg id="dial" viewBox="-50 -50 100 100" role="img" aria-label="Dial driven by the model"></svg>
+      <span class="small" id="ampm" aria-live="off"></span>
+      <div class="transport" role="group" aria-label="Running speed">
+        <button id="run" aria-pressed="true" aria-label="Pause" title="Pause">❚❚</button>
+        <button id="slower" aria-label="Slower" title="Slower">−</button>
+        <span class="mono speedlbl" id="speedLbl" aria-live="polite">1×</span>
+        <button id="faster" aria-label="Faster" title="Faster">+</button>
+      </div>
+      <div class="facechrono" id="faceChrono" role="group" aria-label="Chronograph" hidden>
+        <button id="fStart">Start</button><button id="fReset">Reset</button>
+        <span class="mono" id="fChrRead">00:00:00.0</span>
+      </div>
+      <p class="facemsg" id="faceMsg" aria-live="polite" hidden></p>
+    </section>
+    <div class="navhint" id="navHint">Drag or scroll to pan · Ctrl/⌘ + scroll or pinch to zoom</div>
+  </div>
+  <p class="hint">Hover a part for its name. Press <b>?</b> then tap a part for the full story. <button class="linkish" id="tour">Follow the power from the crown</button></p>
+  </div>
+
+  <div class="side" id="side">
+    <section class="panel" id="crownPanel">
+      <h2>Crown<button class="info" data-part-link="crown" aria-label="How the crown works">i</button></h2>
+      <div class="seg" role="radiogroup" aria-label="Crown position" id="crownSeg">
+        <label><input type="radio" name="crownpos" value="0" checked><span>In<small>wind</small></span></label>
+        <label><input type="radio" name="crownpos" value="1"><span>1st click<small>quick-set</small></span></label>
+        <label><input type="radio" name="crownpos" value="2"><span>Out<small>set time</small></span></label>
+      </div>
+      <div class="row turn">
+        <button id="turnBack" aria-label="Turn the crown back">↺ Back</button>
+        <button id="turnFwd" aria-label="Turn the crown forward">Forward ↻</button>
+      </div>
+      <p class="crownhint" id="crownHint" aria-live="polite"></p>
+      <div class="reserve">
+        <span class="lbl">Power reserve<button class="info" data-term="powerReserve" aria-label="What is power reserve?">i</button></span>
+        <div class="bar" role="meter" aria-label="Power reserve" aria-valuemin="0" id="reserveBar"><i id="reserveFill"></i></div>
+        <span class="mono small" id="reserveText"></span>
+      </div>
+      <div class="row" id="corrRow" hidden>
+        <span class="lbl">Correctors</span>
+        <button id="corrMonth">Month +1</button><button id="corrYear">Year +1</button>
+      </div>
+      <div class="row" id="dayRow" hidden>
+        <button id="dayCorrect">Day corrector</button><span class="small">a pusher in the case side; the crown is busy with date and moon</span>
+      </div>
+      <div id="moonRow" class="moonset" hidden>
+        <span class="lbl">Moon phase<button class="info" data-part-link="moonDisc" aria-label="How the moon phase works">i</button></span>
+        <p class="small" id="moonText" aria-live="polite"></p>
+        <div class="row">
+          <button id="moonBack" aria-label="Pull the crown to the first click and turn it back once">↺ Crown back, 1 day</button>
+          <button id="moonMatch">Match the real moon</button>
+        </div>
+      </div>
+      <div id="chronoRow" hidden>
+        <div class="row">
+          <button class="info" data-part-link="startPusher" aria-label="How the chronograph pushers work">i</button>
+          <button id="chrStart">Start / stop</button>
+          <button id="chrReset">Reset</button>
+          <span class="mono" id="chrRead">00:00:00.0</span>
+        </div>
+        <p class="small" id="chrMsg" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="panel" id="compPanel">
+      <h2>Complications</h2>
+      <fieldset class="opts">
+        <legend>Calendar and time zone</legend>
+        <div class="radios" id="cfgRadios"></div>
+      </fieldset>
+      <fieldset class="opts">
+        <legend>Chronograph<button type="button" class="info" data-term="chronograph" aria-label="What is a chronograph?">i</button></legend>
+        <div class="radios three">
+          <label><input type="radio" name="chrono" id="chrOff" value="off" checked> Off</label>
+          <label><input type="radio" name="chrono" id="chrOn" value="standard"> Three-register</label>
+          <label><input type="radio" name="chrono" id="chrFly" value="flyback"> Flyback<button type="button" class="info" data-term="flyback" aria-label="What is a flyback?">i</button></label>
+        </div>
+        <p class="small" id="chrNote"></p>
+      </fieldset>
+      <fieldset class="opts" id="calTypeSet">
+        <legend>Calendar type<button type="button" class="info" data-term="calType" aria-label="What are calendar types?">i</button></legend>
+        <div class="radios" id="calRadios"></div>
+        <p class="small" id="calNote"></p>
+      </fieldset>
+      <fieldset class="opts">
+        <legend>Date, seconds and power</legend>
+        <div class="radios">
+          <label><input type="checkbox" id="optRetro"> Retrograde date<button type="button" class="info" data-term="retrograde" aria-label="What is retrograde?">i</button></label>
+          <label><input type="checkbox" id="optCentral"> Central seconds<button type="button" class="info" data-term="centralSeconds" aria-label="What are central seconds?">i</button></label>
+          <label><input type="checkbox" id="optPR"> Power reserve hand<button type="button" class="info" data-term="differential" aria-label="What is a differential?">i</button></label>
+        </div>
+      </fieldset>
+      <fieldset class="opts">
+        <legend>Winding<button type="button" class="info" data-term="automatic" aria-label="What is automatic winding?">i</button></legend>
+        <div class="radios three">
+          <label><input type="radio" name="winding" id="windManual" value="manual" checked> Manual</label>
+          <label><input type="radio" name="winding" id="windAuto" value="auto"> Automatic</label>
+        </div>
+        <div class="radios" id="wristRadios" hidden></div>
+      </fieldset>
+
+    </section>
+
+    <section class="panel">
+      <h2>Time and rate</h2>
+      <div class="row">
+        <button id="now">Set to now</button>
+        <span class="small" id="elapsed">elapsed</span>
+        <span class="small" id="rate">rate</span>
+      </div>
+      <div>
+        <label class="lbl" for="scrub">Scrub through the day</label>
+        <input type="range" id="scrub" min="0" max="86399" step="1" value="0">
+      </div>
+      <div>
+        <label class="lbl" for="amp">Balance amplitude <span id="ampv">270°</span></label><button class="info" data-term="amplitude" aria-label="What is amplitude?">i</button>
+        <input type="range" id="amp" min="180" max="320" step="5" value="270">
+      </div>
+      <div class="row">
+        <label class="lbl" for="bph">Beat rate</label><button class="info" data-term="bph" aria-label="What is beat rate?">i</button>
+        <select id="bph">
+          <option value="18000">18,000 A/h · 2.5 Hz</option>
+          <option value="21600">21,600 A/h · 3 Hz</option>
+          <option value="28800" selected>28,800 A/h · 4 Hz</option>
+          <option value="36000">36,000 A/h · 5 Hz</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Going train<button class="info" data-term="ratio" aria-label="What is a gear ratio?">i</button></h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Arbor</th><th>Pinion<button class="info" data-term="pinion" aria-label="What is a pinion?">i</button></th><th>Wheel<button class="info" data-term="wheel" aria-label="What is a wheel?">i</button></th><th>Module<button class="info" data-term="module" aria-label="What is a module?">i</button></th><th>One turn<button class="info" data-term="period" aria-label="What does one turn mean?">i</button></th><th>Target<button class="info" data-term="target" aria-label="What is the target?">i</button></th><th><span class="sr">Status</span></th></tr></thead>
+          <tbody id="train"></tbody>
+        </table>
+      </div>
+      <dl class="kv" id="facts"></dl>
+    </section>
+
+  <section class="notes">
+    <div id="notesBody"></div>
+    <p class="small">Tooth shape<button class="info" data-term="profile" aria-label="What is the tooth shape?">i</button></p>
+    <h2 class="srch">Sources</h2>
+    <ol class="sources" id="sourceList"></ol>
+  </section>
+  </div>
+</div>
+
+<aside id="card" class="card" role="dialog" aria-modal="false" aria-labelledby="cardTitle" hidden>
+  <div class="card-head"><span class="card-kind" id="cardKind"></span><button class="x" id="cardClose" aria-label="Close">×</button></div>
+  <h3 id="cardTitle" tabindex="-1"></h3>
+  <p id="cardShort"></p>
+  <dl class="kv" id="cardStats"></dl>
+  <div class="chips" id="cardRel"></div>
+  <details id="cardMore"><summary>How it works</summary><div id="cardMoreBody"></div></details>
+  <div class="card-foot" id="cardFoot">
+    <button id="cardPrev">← Previous</button>
+    <button id="cardShow">Show me</button>
+    <button id="cardNext">Next →</button>
+  </div>
+</aside>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+
+<script src="js/model.js"></script>
+<script src="js/complications.js"></script>
+<script src="js/glossary.js"></script>
+<script src="js/view.js"></script>
+</body>
+</html>
