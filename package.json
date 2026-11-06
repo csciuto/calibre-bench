@@ -3,12 +3,14 @@
   "private": true,
   "scripts": {
     "serve": "python3 -m http.server 8094",
-    "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "node --test tests/",
+    "test": "node --test 'tests/*.test.js'",
+    "test:unit": "node --test 'tests/*.test.js'",
     "test:e2e": "playwright test",
-    "screenshot": "UPDATE_PREVIEW=1 playwright test e2e/smoke.spec.js"
+    "screenshot": "UPDATE_PREVIEW=1 playwright test e2e/smoke.spec.js --project=desktop",
+    "test:all": "npm test && npm run test:e2e"
   },
   "devDependencies": {
-    "@playwright/test": "^1.64.1"
+    "@playwright/test": "^1.64.1",
+    "@axe-core/playwright": "4.10.2"
   }
 }

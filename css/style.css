@@ -8,7 +8,7 @@ img{max-width:100%}
 /* Layout: a watchmaker's plan drawing on millimetre paper, bench controls below it like a parts sheet */
 :root{
   --paper:#eef0ea; --sheet:#f8f9f5; --ink:#1d2421; --muted:#5f6a64; --grid:#d9ddd3; --grid-major:#c6ccbf;
-  --brass:#9a6f1c; --brass-fill:rgba(196,150,58,.20); --steel:#3c5a78; --steel-fill:rgba(60,90,120,.30);
+  --brass:#8c6418; --brass-fill:rgba(196,150,58,.20); --steel:#3c5a78; --steel-fill:rgba(60,90,120,.30);
   --ruby:#b3263c; --spring:#4b6e8f; --ok:#2f7a4c; --off:#b3402a; --line:#cfd4c8; --sel:#c2410c; --shadow:rgba(30,36,33,.18);
   --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
   --f-body:"Barlow","Helvetica Neue",Arial,sans-serif;
@@ -249,7 +249,7 @@ fieldset.opts legend{font-family:var(--f-display);font-size:14px;letter-spacing:
 .moonset{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}
 .moonset p{margin:0}
 .moonset .ok{color:var(--ok)}
-.muted{opacity:.7}
+.muted{color:var(--muted)}
 .reserve{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
 .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--brass);width:0}
