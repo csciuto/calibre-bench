@@ -11,11 +11,11 @@
     teeth: { barrel: 80, centerP: 10, centerW: 80, thirdP: 10, thirdW: 75, fourthP: 10, fourthW: 96,
              escP: 6, esc: 15, cannon: 12, minuteW: 36, minuteP: 10, hourW: 40 },
     modules: { bc: 0.14, ct: 0.10, tf: 0.08, fe: 0.07, cm: 0.10 },
-    // directions (deg) of each line of centres, driver -> driven; lev = escape -> pallet -> balance
+    // directions (deg) of each line of centers, driver -> driven; lev = escape -> pallet -> balance
     angles: { bc: -10, ct: 30, tf: 10, fe: -40, lev: -10, mw: 150 },
     escTipR: 2.0, escRootR: 1.45, palletToBalance: 3.5, rollerR: 0.7, balanceR: 3.8,
     springTurns: 6.5, bph: 28800, amplitude: 270, lift: 52, palletSpanDeg: 60,
-    // Pallet stones (Abbeyclock, "Drawing the Pallets"): each spans 8 degrees of the escape wheel, centred on the
+    // Pallet stones (Abbeyclock, "Drawing the Pallets"): each spans 8 degrees of the escape wheel, centered on the
     // tangent lines 60 degrees apart. Lock, run to banking and draw are model values.
     stoneHalfDeg: 4, lockDeg: 1.5, slideDeg: 0.5, drawDeg: 12, stoneLen: 0.55,
     // Club teeth: the impulse face rises from the toe (on the locking circle) back to the heel (on the tip circle),
@@ -37,7 +37,7 @@
   const polar = (r, a) => [r * Math.cos(a), r * Math.sin(a)];
   const add = (p, q) => [p[0] + q[0], p[1] + q[1]];
   const f4 = n => n.toFixed(4);
-  const centreDistance = (m, z1, z2) => m * (z1 + z2) / 2;
+  const centerDistance = (m, z1, z2) => m * (z1 + z2) / 2;
 
   // ---------- cycloidal tooth generation ----------
   // Returns polar points (r, angle rad) of the whole outline plus key radii.
@@ -123,14 +123,14 @@
   function build(p) {
     const T = p.teeth, M = p.modules, A = p.angles;
     const g = { cd: {} };
-    g.cd.bc = centreDistance(M.bc, T.barrel, T.centerP);
-    g.cd.ct = centreDistance(M.ct, T.centerW, T.thirdP);
-    g.cd.tf = centreDistance(M.tf, T.thirdW, T.fourthP);
-    g.cd.fe = centreDistance(M.fe, T.fourthW, T.escP);
-    g.cd.cm = centreDistance(M.cm, T.cannon, T.minuteW);
+    g.cd.bc = centerDistance(M.bc, T.barrel, T.centerP);
+    g.cd.ct = centerDistance(M.ct, T.centerW, T.thirdP);
+    g.cd.tf = centerDistance(M.tf, T.thirdW, T.fourthP);
+    g.cd.fe = centerDistance(M.fe, T.fourthW, T.escP);
+    g.cd.cm = centerDistance(M.cm, T.cannon, T.minuteW);
     // solve the minute-pinion/hour-wheel module so the hour wheel is coaxial with the cannon pinion
     g.mpMod = 2 * g.cd.cm / (T.minuteP + T.hourW);
-    g.cd.mh = centreDistance(g.mpMod, T.minuteP, T.hourW);
+    g.cd.mh = centerDistance(g.mpMod, T.minuteP, T.hourW);
     const step = (from, deg, dist) => add(from, polar(dist, deg * D2R));
     g.barrel = [0, 0];
     g.center = step(g.barrel, A.bc, g.cd.bc);
@@ -141,7 +141,7 @@
     g.palletPivotDist = p.escTipR / Math.cos(p.palletSpanDeg / 2 * D2R);
     g.pallet = step(g.esc, A.lev, g.palletPivotDist);
     g.balance = step(g.pallet, A.lev, p.palletToBalance);
-    // Dial side is drawn as its own zone below the train, centred on the projected centre arbor,
+    // Dial side is drawn as its own zone below the train, centered on the projected center arbor,
     // with room for a date ring around it.
     g.mc = add(g.center, [0, 22.5]);
     g.mw = step(g.mc, A.mw, g.cd.cm);
@@ -166,8 +166,8 @@
   }
 
   // ---------- pallet stones ----------
-  // Built in the lever's own frame (origin at the pallet pivot, x toward the balance; the escape centre is at
-  // (-d, 0)). Angles of escape-wheel points are measured from the line of centres, like the lever frame.
+  // Built in the lever's own frame (origin at the pallet pivot, x toward the balance; the escape center is at
+  // (-d, 0)). Angles of escape-wheel points are measured from the line of centers, like the lever frame.
   // Entry stone (A) locks at lever -L with a tooth toe at -(span/2 + half width); exit stone (B) locks at +L with
   // a toe at +(span/2 - half width): 60 degrees apart, so the two locks are half a tooth out of phase.
   // Each stone is a parallelogram: locking face (with draw), impulse face across the inner end, back face.
@@ -175,7 +175,7 @@
     const d = g.palletPivotDist, Rt = p.escTipR - clubHeight(p), L = g.L, D = D2R;   // toes lock on the locking circle
     const lockR = p.lockDeg * D, slide = p.slideDeg * D, liftR = 2 * L - lockR - slide - p.toothLiftDeg * D;
     const rot = (v, a) => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a)];
-    // a point given relative to the escape centre (line-of-centres frame), seen from the lever at angle lam
+    // a point given relative to the escape center (line-of-centers frame), seen from the lever at angle lam
     const toLever = (q, lam) => rot([q[0] - d, q[1]], -lam);
     const fromLever = (v, lam) => { const w = rot(v, lam); return [w[0] + d, w[1]]; };
     const onTip = a => [Rt * Math.cos(a), Rt * Math.sin(a)];
@@ -219,7 +219,7 @@
       if (segCross(P1[i], P1[(i + 1) % P1.length], P2[j], P2[(j + 1) % P2.length])) return true;
     return P1.some(q => inside(q, P2)) || P2.some(q => inside(q, P1));
   }
-  // Escape-wheel tooth outlines (relative to the escape centre, line-of-centres frame) at wheel angle psi (deg,
+  // Escape-wheel tooth outlines (relative to the escape center, line-of-centers frame) at wheel angle psi (deg,
   // toe of tooth 0), keeping only teeth near the pallets.
   function teethAt(p, psi) {
     const n = p.teeth.esc, pitch = 360 / n, out = [];
@@ -239,7 +239,7 @@
     }
     return toothCache.get(key);
   }
-  // The stones, relative to the escape centre, with the lever at lam (rad).
+  // The stones, relative to the escape center, with the lever at lam (rad).
   function stonesAt(p, g, lam) {
     const d = g.palletPivotDist, c = Math.cos(lam), s = Math.sin(lam);
     return [g.stones.A, g.stones.B].map(st => st.map(([x, y]) => [x * c - y * s + d, x * s + y * c]));
@@ -274,15 +274,15 @@
   }
 
   // Lever angle (rad, in the lever frame) that puts the fork slot on the impulse jewel
-  // when the balance is thetaDeg away from the line of centres.
+  // when the balance is thetaDeg away from the line of centers.
   function leverFromBalance(p, thetaDeg) {
     const tr = thetaDeg * D2R;
     return Math.atan2(p.rollerR * Math.sin(tr), p.palletToBalance - p.rollerR * Math.cos(tr));
   }
 
   // ---------- mesh phasing ----------
-  // alpha: direction (deg) from driver centre to driven centre. A tooth centred on the line of
-  // centres on the driver faces a gap on the driven gear; rotation is opposite at ratio zDriver/zDriven.
+  // alpha: direction (deg) from driver center to driven center. A tooth centered on the line of
+  // centers on the driver faces a gap on the driven gear; rotation is opposite at ratio zDriver/zDriven.
   function meshDrivenFromDriver(phiDriver, alpha, zDriver, zDriven) {
     return alpha + 180 + 180 / zDriven - (phiDriver - alpha) * zDriver / zDriven;
   }
@@ -327,7 +327,7 @@
 
   // Hand angles (deg, clockwise from 12) relative to the 12:00:00 reference state.
   // The 12:00:00 reference: halfway between the locked states either side of the beat at t = 0, so the hands are
-  // centred on true time (half a beat early or late at most) whatever the wheel does during that impulse.
+  // centered on true time (half a beat early or late at most) whatever the wheel does during that impulse.
   function refState(p, g) {
     const h = 0.5 / (p.bph / 3600), a = state(p, g, -h), b = state(p, g, h), out = {};
     for (const k of Object.keys(b)) out[k] = typeof b[k] === "number" ? (a[k] + b[k]) / 2 : b[k];
@@ -354,11 +354,11 @@
     const minute = center * T.minuteW / T.cannon, hour = minute * T.hourW / T.minuteP;
     return { esc, fourth, third, center, barrel, minute, hour };
   }
-  // Seconds per day the centre arbor gains (+) or loses (-) against a true hour.
+  // Seconds per day the center arbor gains (+) or loses (-) against a true hour.
   function rateError(p) { return (3600 / periods(p).center - 1) * 86400; }
   function powerReserveHours(p) { return periods(p).barrel * p.springTurns / 3600; }
 
-  return { D2R, DEFAULTS, params, centreDistance, gearOutline, wheelShape, pinionShape, escapeShape,
+  return { D2R, DEFAULTS, params, centerDistance, gearOutline, wheelShape, pinionShape, escapeShape,
            circ, armsPath, build, refState, leverFromBalance, stonesAt, teethAt, overlap, escapeContact, traceBeat, meshDrivenFromDriver, meshDriverFromDriven,
            balanceTiming, state, hands, readHands, periods, rateError, powerReserveHours, polar, add };
 });

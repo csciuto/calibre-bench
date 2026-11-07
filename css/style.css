@@ -5,7 +5,7 @@ body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;ba
 img{max-width:100%}
 [hidden]:not([hidden=until-found i]){display:none!important}
 
-/* Layout: a watchmaker's plan drawing on millimetre paper, bench controls below it like a parts sheet */
+/* Layout: a watchmaker's plan drawing on millimeter paper, bench controls below it like a parts sheet */
 :root{
   --paper:#eef0ea; --sheet:#f8f9f5; --ink:#1d2421; --muted:#5f6a64; --grid:#d9ddd3; --grid-major:#c6ccbf;
   --brass:#8c6418; --brass-fill:rgba(196,150,58,.20); --steel:#3c5a78; --steel-fill:rgba(60,90,120,.30);
@@ -123,7 +123,7 @@ input.tc{width:52px;font-family:var(--f-mono);font-size:14px;padding:3px 5px;bor
 .hole{fill:var(--sheet);stroke:var(--steel)}
 .spring{fill:none;stroke:var(--spring);opacity:.8}
 .pitch{fill:none;stroke:var(--muted);stroke-dasharray:4 3;opacity:.5}
-.centre{stroke:var(--muted);opacity:.55;fill:none}
+.center{stroke:var(--muted);opacity:.55;fill:none}
 .lead{stroke:var(--muted);stroke-dasharray:3 3;fill:none;opacity:.7}
 #plan *{vector-effect:non-scaling-stroke}
 .lab{font-family:var(--f-display);font-weight:600;fill:var(--ink);letter-spacing:.04em;text-transform:uppercase;paint-order:stroke;stroke:var(--sheet);stroke-width:3px;stroke-linejoin:round}
@@ -209,7 +209,7 @@ input.tc{width:52px;font-family:var(--f-mono);font-size:14px;padding:3px 5px;bor
 .clutch{fill:var(--sheet);stroke:var(--muted)}
 .ghost{fill:none;stroke:var(--muted);stroke-dasharray:3 2;opacity:.7}
 .rod{fill:none;stroke:var(--steel)}
-.steel[fill="none"],.hatch[fill="none"]{fill:none} /* open lever paths: the class colour must not fill them */
+.steel[fill="none"],.hatch[fill="none"]{fill:none} /* open lever paths: the class color must not fill them */
 .clutch.on{fill:var(--sel);stroke:var(--sel)}
 sup.cite{font-size:.7em;line-height:0;margin-left:1px}
 sup.cite a{color:var(--brass);text-decoration:none;font-family:var(--f-mono)}

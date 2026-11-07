@@ -461,7 +461,7 @@
     const Cd = G.mc, g = { dial: {}, chrono: {}, move: {}, auto: {}, prog: {} }, d = g.dial;
     const T = P.teeth, mHW = G.mpMod;
     // keyless works (dial side)
-    d.settingWheel = at(G.mw, CM.centreDistance(P.modules.cm, T.minuteW, KEYLESS.settingWheel), 165);
+    d.settingWheel = at(G.mw, CM.centerDistance(P.modules.cm, T.minuteW, KEYLESS.settingWheel), 165);
     d.settingR = P.modules.cm * KEYLESS.settingWheel / 2;
     d.stemY = d.settingWheel[1] + d.settingR;
     d.quickSet = [d.settingWheel[0] - 0.6, d.stemY + 0.1 * KEYLESS.quickSetWheel / 2];
@@ -476,20 +476,20 @@
     d.crownX = Cd[0] - 14.5;      // outer face of the crown, pushed in
     d.stemEnd = d.settingWheel[0] + 0.15;
     // Setting lever and yoke as rigid parts (Horopedia, "Winding and setting mechanism"): pulling the stem turns the
-    // setting lever; its inclined plane pushes the yoke toward the centre, a spring holding the yoke against it; the
+    // setting lever; its inclined plane pushes the yoke toward the center, a spring holding the yoke against it; the
     // yoke's end carries the sliding pinion. Pivots, arm lengths and the plane's shape are model values, built so the
     // lever's pin stays in the stem's groove and the yoke's fork in the pinion's groove at every crown position.
     d.keyless = buildKeyless(d);
     d.settingLeverPivot = d.keyless.S; d.yokePivot = d.keyless.Y;
     // calendar works
-    d.driver24 = at(Cd, CM.centreDistance(mHW, T.hourW, 2 * T.hourW), -30);
+    d.driver24 = at(Cd, CM.centerDistance(mHW, T.hourW, 2 * T.hourW), -30);
     d.driver24R = mHW * 2 * T.hourW / 2;
     d.driver24Z = 2 * T.hourW;
     d.ringIn = 10.0; d.ringTeeth = 10.5; d.ringOut = 11.6;
     // Date finger, ring teeth and their phase are chosen together so the finger, pushing a tooth's back flank, has
     // carried the ring exactly half a tooth (the jumper's peak) at midnight, then withdraws without touching a tooth
     // after the jumper snaps the ring on. Model values, checked by the tests.
-    d.dateFinger = d.ringIn + 0.15 - CM.centreDistance(mHW, T.hourW, 2 * T.hourW);
+    d.dateFinger = d.ringIn + 0.15 - CM.centerDistance(mHW, T.hourW, 2 * T.hourW);
     d.ringToothHalf = 0.42; d.ringPhase = 6.2;
     // which way the driving wheel turns in the drawing: cannon -> minute wheel -> hour wheel -> it, each mesh reversing
     d.fingerSense = -(Math.sign(CM.state(P, G, 600).center - CM.refState(P, G).center) || 1);
@@ -505,10 +505,10 @@
     d.moonRa = CM.wheelShape(MOON_TEETH, d.moonM, 0.3).Ra;
     d.moonDisc = at(d.driver24, d.moonFinger + d.moonRa - 0.05, 105);
     d.fingerAngles = { date: -15, day: -110, moon: 109 }; // driving wheel frame, at midnight
-    // GMT: hour wheel -> intermediate (reverses) -> GMT wheel on the centre (same direction, half speed)
-    d.gmtInter = at(Cd, CM.centreDistance(mHW, T.hourW, 20), 230);
+    // GMT: hour wheel -> intermediate (reverses) -> GMT wheel on the center (same direction, half speed)
+    d.gmtInter = at(Cd, CM.centerDistance(mHW, T.hourW, 20), 230);
     d.gmtInterZ = 20; d.gmtInterPZ = 10; d.gmtWheelZ = 40;
-    d.gmtMod = 2 * CM.centreDistance(mHW, T.hourW, 20) / (d.gmtInterPZ + d.gmtWheelZ);
+    d.gmtMod = 2 * CM.centerDistance(mHW, T.hourW, 20) / (d.gmtInterPZ + d.gmtWheelZ);
     d.gmtWheelR = d.gmtMod * d.gmtWheelZ / 2;
     // movement side: ratchet on the barrel arbor, stop lever at the balance
     const m = g.move;
@@ -518,10 +518,10 @@
     m.stopTipIn = at(G.balance, P.balanceR + 0.02, 125);
     m.stopTipOut = at(G.balance, P.balanceR + 0.7, 125);
     // Chronograph module and indirect central seconds: drawn above the train, shifted so their arbors line up
-    // with the centre and fourth wheels below. Tooth counts here are model values, not taken from a real calibre.
+    // with the center and fourth wheels below. Tooth counts here are model values, not taken from a real calibre.
     const c = g.chrono, dy = -24;
     c.shift = [0, dy];
-    c.runner = [G.center[0], G.center[1] + dy];          // chronograph seconds wheel, on the centre
+    c.runner = [G.center[0], G.center[1] + dy];          // chronograph seconds wheel, on the center
     c.drive = [G.fourth[0], G.fourth[1] + dy];           // the fourth wheel, projected up into this zone
     c.fourthZ = T.fourthW; c.fourthM = P.modules.fe;     // the fourth wheel's teeth (they also drive the escape pinion, at module fe)
     c.fourthR = c.fourthM * c.fourthZ / 2;
@@ -537,7 +537,7 @@
     const a = (dFO * dFO - dOR * dOR + base * base) / (2 * base), h = Math.sqrt(Math.max(0, dFO * dFO - a * a));
     const ux = (c.runner[0] - c.drive[0]) / base, uy = (c.runner[1] - c.drive[1]) / base;
     c.oscIn = [c.drive[0] + a * ux - h * uy, c.drive[1] + a * uy + h * ux];
-    // disengaged: swung about the fourth wheel's centre so the lower pinion stays in mesh and the upper one clears the runner
+    // disengaged: swung about the fourth wheel's center so the lower pinion stays in mesh and the upper one clears the runner
     const a0 = Math.atan2(c.oscIn[1] - c.drive[1], c.oscIn[0] - c.drive[0]), off = 6 * D2R;
     const cand = [a0 + off, a0 - off].map(t => [c.drive[0] + dFO * Math.cos(t), c.drive[1] + dFO * Math.sin(t)]);
     const dRun = q => Math.hypot(q[0] - c.runner[0], q[1] - c.runner[1]);
@@ -556,7 +556,7 @@
     c.minStar = [c.runner[0] - (c.runnerR + 0.15 + c.minDriveRa), c.runner[1]];
     c.minStarR = c.minM * c.minDriveZ / 2;
     c.minCounterR = c.minM * 30 / 2;
-    c.minCounter = [c.minStar[0] - CM.centreDistance(c.minM, c.minDriveZ, 30), c.runner[1]];
+    c.minCounter = [c.minStar[0] - CM.centerDistance(c.minM, c.minDriveZ, 30), c.runner[1]];
     c.minFingerL = c.runnerR + 0.15 + 0.05;            // finger tip radius on the seconds wheel: 0.05 into the teeth
     c.minPhase = 1.25;                                   // the driving wheel's tooth phase (deg)
     c.chronoSense = Math.sign(CM.state(P, G, 1).fourth - CM.state(P, G, 0).fourth) || 1;  // the runner turns with the fourth wheel
@@ -642,8 +642,8 @@
     const rot = (v, a) => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a)];
     const sub = (a, b) => [a[0] - b[0], a[1] - b[1]], add = (a, b) => [a[0] + b[0], a[1] + b[1]];
     const ang = v => Math.atan2(v[1], v[0]);
-    // a nub placed so that turning its lever moves it straight toward or away from the cam's centre (on the circle
-    // whose diameter joins the pivot and the cam centre)
+    // a nub placed so that turning its lever moves it straight toward or away from the cam's center (on the circle
+    // whose diameter joins the pivot and the cam center)
     const nubFor = (pivot, rho, side) => { const v = sub(pivot, c.cam), L = Math.hypot(v[0], v[1]), g = Math.acos(rho / L) * side; return add(c.cam, rot([v[0] / L * rho, v[1] / L * rho], g)); };
     // coupling lever: pivot on the fourth wheel's arbor; engaged when the pinion sits at oscIn
     const aIn = ang(sub(c.oscIn, c.drive)), aOut = ang(sub(c.oscOut, c.drive));
@@ -731,7 +731,7 @@
   }
 
   // ---------- calendar fingers: a point (the finger's tip) pushing a toothed ring forward ----------
-  // Internal teeth of a ring centred at the origin: triangles with their base on rBase and tip on rIn.
+  // Internal teeth of a ring centered at the origin: triangles with their base on rBase and tip on rIn.
   function insideTri(pt, a, b, c) {
     const s = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
     const d1 = s(a, b, pt), d2 = s(b, c, pt), d3 = s(c, a, pt);
@@ -779,17 +779,17 @@
     const d = X.dial, phi = (d.fingerAngles[key] + d.fingerSense * tod / DAY * 360) * D2R;
     return [d.driver24[0] + len * Math.cos(phi), d.driver24[1] + len * Math.sin(phi)];
   }
-  function wheelBlocks(tip, centre, poly, ang) {
-    const a = ang * D2R, x = tip[0] - centre[0], y = tip[1] - centre[1];
+  function wheelBlocks(tip, center, poly, ang) {
+    const a = ang * D2R, x = tip[0] - center[0], y = tip[1] - center[1];
     return insidePoly([x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)], poly);
   }
   // snap: once the push reaches half a step the jumper carries the wheel the rest of the way (the value then holds
   // at a whole step until the calendar moves at midnight)
-  function traceWheelPush(X, key, len, centre, poly, phase, pitch) {
+  function traceWheelPush(X, key, len, center, poly, phase, pitch) {
     const t0 = DAY - 4 * 3600, dt = 10, n = 4 * 3600 / dt, vals = [];
     let push = 0;
     for (let i = 0; i <= n; i++) {
-      const tip = fingerTip(X, key, len, t0 + i * dt), blocked = a => wheelBlocks(tip, centre, poly, phase + a);
+      const tip = fingerTip(X, key, len, t0 + i * dt), blocked = a => wheelBlocks(tip, center, poly, phase + a);
       if (push < pitch && blocked(push)) {
         let a = push, b = push + 0.01;
         while (blocked(b) && b < pitch) { a = b; b += 0.01; }
@@ -807,7 +807,7 @@
     const u = Math.min(tb.vals.length - 1, (tod - tb.t0) / tb.dt), i = Math.min(tb.vals.length - 2, Math.floor(u)), f = u - i;
     return tb.vals[i] + (tb.vals[i + 1] - tb.vals[i]) * f;
   };
-  // The date finger's tip, relative to the dial centre, at time of day tod (s). The driving wheel turns once a day;
+  // The date finger's tip, relative to the dial center, at time of day tod (s). The driving wheel turns once a day;
   // fingerSense is its direction in the drawing (+1 clockwise), worked out from the motion works.
   function dateFingerTip(X, G, tod, sense) {
     const d = X.dial, off = [d.driver24[0] - G.mc[0], d.driver24[1] - G.mc[1]];

@@ -53,7 +53,7 @@
     const grp = (p, key) => { const o = el("g", { transform: at(p) }, scene); if (key) tagPart(o, key, true); return el("g", {}, o); };
 
     for (const [a, b] of [[g.barrel, g.center], [g.center, g.third], [g.third, g.fourth], [g.fourth, g.esc], [g.esc, g.balance], [g.mc, g.mw]])
-      el("line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], class: "centre", "stroke-width": "0.6" }, scene);
+      el("line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], class: "center", "stroke-width": "0.6" }, scene);
     el("line", { x1: g.center[0], y1: g.center[1], x2: g.mc[0], y2: g.mc[1], class: "lead", "stroke-width": "1" }, scene);
 
     // barrel with mainspring
@@ -174,7 +174,7 @@
       { key: "hourHammer", need: "chrono", at: [X.chrono.hourHammerPivot[0] - 1.0, X.chrono.hourHammerPivot[1] + 2.0], side: "bottom", sub: "", c: X.chrono.hourHammerPivot, r: 0.55 },
       { key: "rotor", need: "auto", at: [X.auto.rotor[0] - 8.5, g.barrel[1] - 7.6], side: "top", sub: "automatic winding", c: X.auto.rotor, r: X.auto.rotorR * 0.4 },
       { key: "prDiff", need: "pr", at: [X.auto.diff[0] - 11, X.auto.diff[1] + 2.4], side: "bottom", sub: "drives the reserve hand", c: X.auto.diff, r: X.auto.sunA },
-      { key: "secondsWheel", need: "central", at: [X.chrono.runner[0] - 6.5, X.chrono.runner[1] - 6.2], side: "top", sub: "seconds on the centre", c: X.chrono.runner, r: X.chrono.wheelR },
+      { key: "secondsWheel", need: "central", at: [X.chrono.runner[0] - 6.5, X.chrono.runner[1] - 6.2], side: "top", sub: "seconds on the center", c: X.chrono.runner, r: X.chrono.wheelR },
       { key: "monthStar", need: "monthStar", at: [X.prog.cam[0] + X.prog.camR + 1.2, X.prog.cam[1] + 0.6], side: "bottom", sub: "12 teeth", c: X.prog.cam, r: X.prog.camR },
       { key: "programCam", need: "program", at: [X.prog.cam[0] + X.prog.camR + 1.2, X.prog.cam[1] + 0.6], side: "bottom", sub: "month lengths", c: X.prog.cam, r: X.prog.camR },
       { key: "grandLever", need: "program", at: [X.prog.leverPivot[0] - 3.2, X.prog.leverPivot[1] + 3.0], side: "bottom", sub: "", c: X.prog.leverPivot, r: 0 },
@@ -253,7 +253,7 @@
     // fixed date window marker at 3 o'clock
     el("path", { d: rectPath(d.ringTeeth - 0.05, -0.55, d.ringOut + 0.05, 0.55), class: "window", "stroke-width": "1.2" }, ring);
 
-    // GMT intermediate and GMT wheel (on the centre, under the hour wheel)
+    // GMT intermediate and GMT wheel (on the center, under the hour wheel)
     const gi = part("gmtInter", d.gmtInter, "gmt");
     R.gmtInter = el("g", {}, gi);
     const giw = CM.wheelShape(d.gmtInterZ, G.mpMod, G.mpMod * T.hourW / 2);
@@ -673,7 +673,7 @@
   const fitMw = () => { const f = W.features(); fitBox(X.dial.crownX - 2.4, G.mc[1] - X.dial.ringOut - 0.6 - (f.month || f.retro ? 4 : 0), (f.month || f.retro) ? X.prog.cam[0] + X.prog.camR + 9 : G.mc[0] + X.dial.ringOut + 8.5, G.mc[1] + X.dial.ringOut + 3.6); };
   const fitAuto = () => fitBox(X.auto.rotor[0] - X.auto.rotorR - 1.5, X.auto.rotor[1] - X.auto.rotorR - 1, X.auto.rotor[0] + X.auto.rotorR + 1.5, X.auto.diff[1] + 5);
   const fitChr = () => fitBox(X.chrono.hourInter[0] - X.chrono.hourInterR - 4, X.chrono.runner[1] - 8.2, X.chrono.pushStart[0] + 9, X.chrono.hourHammerPivot[1] + 3.6);
-  function partFocus(key) { // centre and radius (mm) to zoom to for a part
+  function partFocus(key) { // center and radius (mm) to zoom to for a part
     const g = G, s = g.shapes;
     return ({ barrel: [g.barrel, s.barrelW.Ra], center: [g.center, s.centerW.Ra], third: [g.third, s.thirdW.Ra],
       fourth: [g.fourth, s.fourthW.Ra], escape: [g.esc, P.escTipR + 0.6], lever: [g.pallet, 2.6],
@@ -809,12 +809,12 @@
     const dx = (e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX) * unit, dy = (e.shiftKey && !e.deltaX ? 0 : e.deltaY) * unit;
     V.cx += dx / V.k; V.cy += dy / V.k; applyView();
   }, { passive: false });
-  function zoomCentre(f) { const r = svg.getBoundingClientRect(); zoomAt(r.left + r.width / 2, r.top + r.height / 2, f); }
-  $("zoomIn").onclick = () => zoomCentre(1.4);
-  $("zoomOut").onclick = () => zoomCentre(1 / 1.4);
+  function zoomCenter(f) { const r = svg.getBoundingClientRect(); zoomAt(r.left + r.width / 2, r.top + r.height / 2, f); }
+  $("zoomIn").onclick = () => zoomCenter(1.4);
+  $("zoomOut").onclick = () => zoomCenter(1 / 1.4);
   svg.addEventListener("keydown", e => {
-    if (e.key === "+" || e.key === "=") { e.preventDefault(); zoomCentre(1.25); }
-    else if (e.key === "-" || e.key === "_") { e.preventDefault(); zoomCentre(0.8); }
+    if (e.key === "+" || e.key === "=") { e.preventDefault(); zoomCenter(1.25); }
+    else if (e.key === "-" || e.key === "_") { e.preventDefault(); zoomCenter(0.8); }
   });
   if (navHint && window.matchMedia && window.matchMedia("(pointer: coarse)").matches) navHint.textContent = "Drag to pan · pinch to zoom";
   svg.addEventListener("keydown", () => svg.classList.remove("ptr"), true);
@@ -1066,7 +1066,7 @@
   const rows = [
     { grp: "Going train" },
     { name: "Barrel", part: "barrel", w: "barrel", mod: () => P.modules.bc, per: p => p.barrel },
-    { name: "Centre", part: "center", p: "centerP", w: "centerW", mod: () => P.modules.bc + " / " + P.modules.ct, per: p => p.center, target: 3600 },
+    { name: "Center", part: "center", p: "centerP", w: "centerW", mod: () => P.modules.bc + " / " + P.modules.ct, per: p => p.center, target: 3600 },
     { name: "Third", part: "third", p: "thirdP", w: "thirdW", mod: () => P.modules.ct + " / " + P.modules.tf, per: p => p.third },
     { name: "Fourth", part: "fourth", p: "fourthP", w: "fourthW", mod: () => P.modules.tf + " / " + P.modules.fe, per: p => p.fourth, target: 60 },
     { name: "Escape", part: "escape", p: "escP", fixed: "15 club", mod: () => P.modules.fe, per: p => p.esc },
@@ -1096,8 +1096,8 @@
     }));
     const rate = CM.rateError(P);
     const info = (k, q) => `<button class="info" data-term="${k}" aria-label="${q}">i</button>`;
-    $("facts").innerHTML = `<dt>Centre → escape ratio${info("ratio", "What is a ratio?")}</dt><dd>${(p.center / p.esc).toFixed(2)} : 1</dd>
-      <dt>Beats per centre turn${info("beat", "What is a beat?")}</dt><dd>${Math.round(p.center * P.bph / 3600).toLocaleString("en-US")}</dd>
+    $("facts").innerHTML = `<dt>Center → escape ratio${info("ratio", "What is a ratio?")}</dt><dd>${(p.center / p.esc).toFixed(2)} : 1</dd>
+      <dt>Beats per center turn${info("beat", "What is a beat?")}</dt><dd>${Math.round(p.center * P.bph / 3600).toLocaleString("en-US")}</dd>
       <dt>Power reserve${info("powerReserve", "What is power reserve?")}</dt><dd>${CM.powerReserveHours(P).toFixed(1)} h on ${P.springTurns} mainspring turns</dd>
       <dt>Lift / lever swing${info("lift", "What is the lift angle?")}</dt><dd>${P.lift}° / ±${(G.L / D2R).toFixed(1)}°</dd>
       <dt>Motion works spacing${info("module", "What is a module?")}</dt><dd>${G.cd.cm.toFixed(3)} mm = ${G.cd.mh.toFixed(3)} mm</dd>
@@ -1161,7 +1161,7 @@
     const was = W.features().chrono;
     W.setOption("chrono", e.target.value); applyFeatures();
     const now = W.features().chrono;
-    if (now && !was) faceNote(marked("The big centre hand is now the stopwatch's, so it waits at 12 until you press Start {{mono7750}}. The running seconds moved to the small dial at 9 {{mono7750}}."));
+    if (now && !was) faceNote(marked("The big center hand is now the stopwatch's, so it waits at 12 until you press Start {{mono7750}}. The running seconds moved to the small dial at 9 {{mono7750}}."));
     else if (!now && was) faceNote("");
   });
   const calWrap = $("calRadios");
@@ -1198,7 +1198,7 @@
     const cfgInput = $("cfg-" + W.config); if (cfgInput) cfgInput.checked = true;
     setDis("chrOn", !a.chrono); setDis("chrFly", !a.flyback);
     $("chrOff").checked = W.opts.chrono === "off"; $("chrOn").checked = W.opts.chrono === "standard"; $("chrFly").checked = W.opts.chrono === "flyback";
-    $("chrNote").innerHTML = marked(a.chrono ? (f.flyback ? "Flyback: press reset while running to restart from zero in one press {{wikiFlyback}}." : "Modelled on the Valjoux 7750: running seconds at 9, 30-minute counter at 12, 12-hour counter at 6 {{mono7750}}.")
+    $("chrNote").innerHTML = marked(a.chrono ? (f.flyback ? "Flyback: press reset while running to restart from zero in one press {{wikiFlyback}}." : "Modeled on the Valjoux 7750: running seconds at 9, 30-minute counter at 12, 12-hour counter at 6 {{mono7750}}.")
       : `Not offered with ${CX.config(W.config).name.toLowerCase()} here. The 7750 family covers date {{grail7753}}, day-date and date + GMT {{mono7750}}, and full calendar with moon {{grail7751}}; time only is this app's choice {{?}}.`);
     for (const c of CX.CAL_TYPES) { setDis("cal-" + c.id, c.id !== "simple" && !a.calType); $("cal-" + c.id).checked = f.calType === c.id; }
     const CAL_NOTES = { simple: "Every month gets 31 days, so it needs correcting after shorter months {{wikiAnnual}}.",
@@ -1213,7 +1213,7 @@
     const wr = $("wrist-" + W.opts.wrist); if (wr) wr.checked = true;
     document.querySelectorAll('#crownSeg input').forEach(inp => { inp.disabled = !ps.includes(+inp.value); inp.checked = +inp.value === W.crownPos; });
     $("moonRow").hidden = !f.moon; $("dayRow").hidden = !f.dayPusher; $("chronoRow").hidden = !f.chrono; $("faceChrono").hidden = !f.chrono; $("corrRow").hidden = !f.program; $("corrYear").hidden = !f.perpetual;
-    $("vChr").hidden = !(f.chrono || f.central); $("vChr").textContent = f.chrono ? "Chronograph" : "Centre seconds";
+    $("vChr").hidden = !(f.chrono || f.central); $("vChr").textContent = f.chrono ? "Chronograph" : "Center seconds";
     $("vAuto").hidden = !(f.auto || f.pr);
     crownHint();
   }
@@ -1373,7 +1373,7 @@
       R.sunB.setAttribute("transform", `rotate(${f4(-r.drum % 360)})`);
       R.carrier.setAttribute("transform", `rotate(${f4(-150 + 120 * r.springFraction)})`);
     }
-    // indirect central seconds: pinion on the fourth arbor, large intermediate wheel, pinion on the centre
+    // indirect central seconds: pinion on the fourth arbor, large intermediate wheel, pinion on the center
     if (f.central) {
       const c = X.chrono, aFI = Math.atan2(c.csInter[1] - c.drive[1], c.csInter[0] - c.drive[0]) / D2R, aIC = Math.atan2(c.runner[1] - c.csInter[1], c.runner[0] - c.csInter[0]) / D2R;
       const inter = CM.meshDrivenFromDriver(st.fourth, aFI, c.csPinionZ, c.csInterZ);
@@ -1481,7 +1481,7 @@
   // page notes and the full list of sources
   const NOTES = [
     "Every angle on the drawing is computed from one number, the watch's time {{app}}. The balance swings as a harmonic oscillator {{wikiBalWheel}}; while it's within the lift angle its impulse pin works the lever {{ccLift,wikiLever}}, which lets the escape wheel turn half a tooth {{wikiLever}}. Everything upstream turns by exact tooth ratios, and each mesh is phased so the teeth interleave {{calc}}.",
-    "Watch teeth have long been cycloidal {{sjxGears}}. Here wheel tips are epicycloids rolled by a circle half the mating pinion's radius, and pinion flanks are radial {{model}}. Sizes are in millimetres, but the tooth counts and modules are illustrative, not taken from a real calibre {{model}}. Pinch or scroll to zoom, drag to pan, and edit tooth counts to break things {{app}}.",
+    "Watch teeth have long been cycloidal {{sjxGears}}. Here wheel tips are epicycloids rolled by a circle half the mating pinion's radius, and pinion flanks are radial {{model}}. Sizes are in millimeters, but the tooth counts and modules are illustrative, not taken from a real calibre {{model}}. Pinch or scroll to zoom, drag to pan, and edit tooth counts to break things {{app}}.",
     "How we know: the numbers in brackets link to the sources below. [citation needed] marks statements we couldn't find a source for. [model value] marks numbers chosen for this simulator. [worked out] marks things calculated here and checked by the tests. [owner's observation] marks things seen first-hand on the author's Valjoux 7750. {{app}}"
   ];
   $("notesBody").innerHTML = NOTES.map(n => `<p>${marked(n)}</p>`).join("");

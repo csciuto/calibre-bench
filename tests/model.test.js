@@ -9,11 +9,11 @@ const GL = require('../js/glossary.js');
 const P = CM.params(), G = CM.build(P), X = CX.buildGeometry(P, G);
 const near = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol, `${msg || ''} ${a} not within ${tol} of ${b}`);
 
-test('going train: centre once an hour, fourth once a minute, hour wheel in 12 h, no rate error', () => {
+test('going train: center once an hour, fourth once a minute, hour wheel in 12 h, no rate error', () => {
   const per = CM.periods(P);
   near(per.center, 3600, 1e-9); near(per.fourth, 60, 1e-9); near(per.hour, 43200, 1e-9);
   near(CM.rateError(P), 0, 1e-6);
-  near(per.center / per.esc, 960, 1e-9, 'centre to escape ratio 8 x 7.5 x 16');
+  near(per.center / per.esc, 960, 1e-9, 'center to escape ratio 8 x 7.5 x 16');
 });
 
 test('changing a tooth count shows up as a rate error', () => {
@@ -25,7 +25,7 @@ test('power reserve is barrel turn time x spring turns', () => {
   near(CM.powerReserveHours(P), 8 * 6.5, 1e-9);
 });
 
-test('motion works: both pairs span the same centre distance (hour wheel coaxial)', () => {
+test('motion works: both pairs span the same center distance (hour wheel coaxial)', () => {
   near(G.cd.cm, G.cd.mh, 1e-12);
 });
 

@@ -1,6 +1,6 @@
 # Calibre Bench
 
-An interactive plan drawing of a mechanical watch movement, laid flat on millimetre paper. The going train, Swiss lever escapement, keyless works, motion works and calendar run live from a single number, the watch's time, and every part explains itself with sources.
+An interactive plan drawing of a mechanical watch movement, laid flat on millimeter paper. The going train, Swiss lever escapement, keyless works, motion works and calendar run live from a single number, the watch's time, and every part explains itself with sources.
 
 **Live:** [corey.sciu.to/calibre-bench](https://corey.sciu.to/calibre-bench/)
 
@@ -31,7 +31,7 @@ npm run test:e2e     # Playwright
 npm run screenshot   # refreshes preview.png
 ```
 
-The unit tests (`tests/model.test.js`) back the app's "worked out … checked by the tests" claims: exact train ratios, half a tooth per beat, no tooth passing through a pallet stone, the date finger's timing, calendar month lengths, crown, chronograph and automatic-winding behaviour, and that every citation in the glossary resolves.
+The unit tests (`tests/model.test.js`) back the app's "worked out … checked by the tests" claims: exact train ratios, half a tooth per beat, no tooth passing through a pallet stone, the date finger's timing, calendar month lengths, crown, chronograph and automatic-winding behavior, and that every citation in the glossary resolves.
 
 ## Layout
 
