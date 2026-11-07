@@ -41,7 +41,9 @@ css/style.css         styles (light and dark)
 js/model.js           geometry and kinematics of the going train and escapement (pure, no DOM)
 js/complications.js   the watch as a state machine, plus geometry for every zone (pure)
 js/glossary.js        part and term explanations with sources (pure)
-js/view.js            drawing, dial, controls and info cards
+js/view.js            drawing the movement, controls, pan and zoom, info cards
+js/parts.js           the complication parts (calendar, chronograph, automatic winding, ...)
+js/dial.js            the dial and hands
 ```
 
 ## Deploying and versioning

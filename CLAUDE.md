@@ -7,7 +7,7 @@ Commit and push freely once tests pass.
 
 ## This app
 
-- `js/model.js` and `js/complications.js` are the model (unit-tested in `tests/`); `js/view.js` draws;
+- `js/model.js` and `js/complications.js` are the model (unit-tested in `tests/`); `js/view.js` draws, with `js/parts.js` (complication parts) and `js/dial.js` (dial and hands);
   `js/glossary.js` holds the part explanations and sources.
 - Every statement in the app is marked: a numbered source, *model value*, *worked out*, or *citation needed*.
   Keep it that way. Tooth counts and modules are illustrative and the app says so.
