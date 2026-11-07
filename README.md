@@ -4,6 +4,8 @@ An interactive plan drawing of a mechanical watch movement, laid flat on millime
 
 **Live:** [corey.sciu.to/calibre-bench](https://corey.sciu.to/calibre-bench/)
 
+Built with [Claude](https://claude.ai) and [Claude Code](https://claude.com/claude-code).
+
 ## What's in it
 
 - **Going train and escapement.** Cycloidal wheels and pinions sized by module, a 15-tooth club-tooth escape wheel and pallet stones whose contact is solved geometrically (the wheel recoils slightly as a stone unlocks, and never passes through one), a balance at 18,000 to 36,000 A/h.
