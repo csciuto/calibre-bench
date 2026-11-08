@@ -13,13 +13,27 @@ async function set(page, s) {
   await page.evaluate((s) => {
     const W = window.__calibre.watch(), click = (id) => document.getElementById(id).click();
     if (s.config) click('cfg-' + s.config);
-    if (s.chrono) click('chrOn');
+    if (s.flyback) click('chrFly');
+    else if (s.chrono) click('chrOn');
+    if (s.calType) click('cal-' + s.calType);
+    if (s.retro) click('optRetro');
+    if (s.central) click('optCentral');
     if (s.pr) click('optPR');
+    if (s.auto) click('windAuto');
+    if (s.wrist) click('wrist-' + s.wrist);
     if (s.side) click('side' + s.side[0].toUpperCase() + s.side.slice(1));
     if (s.view) click(s.view);
     if (s.teeth != null) W.cal.moon = s.teeth;
     if (s.date != null) W.cal.date = s.date;
-    if (s.spring != null) W.springLeft = s.spring;
+    if (s.day != null) W.cal.day = s.day;
+    if (s.month != null) W.cal.month = s.month;
+    if (s.year != null) W.cal.year = s.year;
+    if (s.running) W.pushStart();
+    if (s.stopped) { W.pushStart(); }
+    if (s.elapsed != null) W.chrono.elapsed = s.elapsed;
+    if (s.stopped) W.pushStart();
+    if (s.spring != null) { W.springLeft = s.spring; W.drumTurns = 0; }
+    W.wall = 0;   // the few milliseconds it ran before pausing
     if (s.crown != null) document.querySelector(`#crownSeg input[value="${s.crown}"]`).click();
     window.__calibre.setTime(s.time != null ? s.time : 6.5 * 3600);
   }, s);

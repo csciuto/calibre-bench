@@ -174,9 +174,9 @@
       { key: "hourCounter", need: "chrono", at: [X.chrono.hourInter[0] - X.chrono.hourInterR - 5.5, X.chrono.hourInter[1] - 2.4], side: "top", sub: "12 hours, from the barrel", c: X.chrono.hourCounter, r: X.chrono.hourCounterR },
       { key: "hammer", need: "chrono", at: [X.chrono.hammerPivot[0] - 2.0, X.chrono.hammerPivot[1] + 2.4], side: "bottom", sub: "seconds and minutes", c: X.chrono.hammerPivot, r: 0.55 },
       { key: "hourHammer", need: "chrono", at: [X.chrono.hourHammerPivot[0] - 1.0, X.chrono.hourHammerPivot[1] + 2.0], side: "bottom", sub: "", c: X.chrono.hourHammerPivot, r: 0.55 },
-      { key: "rotor", need: "auto", at: [X.auto.rotor[0] - 8.5, g.barrel[1] - 7.6], side: "top", sub: "automatic winding", c: X.auto.rotor, r: X.auto.rotorR * 0.4 },
+      { key: "rotor", need: "auto", at: [X.auto.rotor[0] - X.auto.rotorR - 1, X.auto.rotor[1] + X.auto.rotorR * 0.75], side: "bottom", sub: "automatic winding", c: X.auto.rotor, r: X.auto.rotorR * 0.4 },
       { key: "prDiff", need: "pr", at: [X.auto.diff[0] - 11, X.auto.diff[1] + 2.4], side: "bottom", sub: "drives the reserve hand", c: X.auto.diff, r: X.auto.sunA },
-      { key: "secondsWheel", need: "central", at: [X.chrono.runner[0] - 6.5, X.chrono.runner[1] - 6.2], side: "top", sub: "seconds on the center", c: X.chrono.runner, r: X.chrono.wheelR },
+      { key: "secondsWheel", need: "central", at: [X.chrono.runner[0] - 6.5, X.chrono.runner[1] - 6.2], side: "top", sub: "seconds on the center", c: X.chrono.runner, r: 0.6 },
       { key: "monthStar", need: "monthStar", at: [X.prog.cam[0] + X.prog.camR + 1.2, X.prog.cam[1] + 0.6], side: "bottom", sub: "12 teeth", c: X.prog.cam, r: X.prog.camR },
       { key: "programCam", need: "program", at: [X.prog.cam[0] + X.prog.camR + 1.2, X.prog.cam[1] + 0.6], side: "bottom", sub: "month lengths", c: X.prog.cam, r: X.prog.camR },
       { key: "grandLever", need: "program", at: [X.prog.leverPivot[0] - 3.2, X.prog.leverPivot[1] + 3.0], side: "bottom", sub: "", c: X.prog.leverPivot, r: 0 },
@@ -272,6 +272,10 @@
     // the toolbar and the readout sit over the drawing; a label under them counts as off the edge
     const tools = document.querySelector(".tools"), ro = document.querySelector(".readout");
     const topIn = ((tools ? tools.offsetHeight : 0) + 10) / V.k, botIn = ((ro ? ro.offsetHeight : 0) + 10) / V.k;
+    // so does the floating watch face
+    const sr = svg.getBoundingClientRect(), fr = $("face").getBoundingClientRect();
+    const toX = px => vb.x + (px - sr.left) / V.k, toY = py => vb.y + (py - sr.top) / V.k;
+    const panel = vb && vb.width ? { x0: toX(fr.left - 6), x1: toX(fr.right + 6), y0: toY(fr.top - 6), y1: toY(fr.bottom + 6) } : null;
     for (const g of labG.children) {
       g.removeAttribute("visibility");
       if (g.getAttribute("display") === "none") continue;
@@ -283,7 +287,8 @@
                   : { x0: b.x, y0: b.y, x1: b.x + b.width, y1: b.y + b.height };
       }
       if (!box) continue;
-      const off = vb && vb.width && (box.x1 > vb.x + vb.width || box.x0 < vb.x || box.y0 < vb.y + topIn || box.y1 > vb.y + vb.height - botIn);
+      const off = vb && vb.width && (box.x1 > vb.x + vb.width || box.x0 < vb.x || box.y0 < vb.y + topIn || box.y1 > vb.y + vb.height - botIn
+        || (panel && box.x0 < panel.x1 && box.x1 > panel.x0 && box.y0 < panel.y1 && box.y1 > panel.y0));
       const hit = kept.some(k => box.x0 < k.x1 + pad && box.x1 > k.x0 - pad && box.y0 < k.y1 + pad && box.y1 > k.y0 - pad);
       if (off || hit) g.setAttribute("visibility", "hidden"); else kept.push(box);
     }
@@ -689,9 +694,11 @@
   faceMin.onclick = () => setFaceMin(!face.classList.contains("min"));
   try { if (localStorage.getItem("faceMin") === "1") setFaceMin(true); } catch (_) {}
   function setNow() { // start a fresh watch at the current time and date, keeping its layout and wind
-    const keep = { config: W.config, chrono: W.chronoOn, spring: W.springLeft, crown: W.crownPos };
+    const keep = { config: W.config, opts: W.opts, spring: W.springLeft, crown: W.crownPos };
     W = CX.createWatch(P, Object.assign(CX.initFromDate(new Date()), { springLeft: keep.spring }));
-    W.setConfig(keep.config, keep.chrono); W.setCrown(keep.crown);
+    W.setConfig(keep.config);
+    for (const [k, v] of Object.entries(keep.opts)) W.setOption(k, v);
+    W.setCrown(keep.crown);
     syncControls();
   }
   $("now").onclick = () => { setNow(); render(); };
@@ -963,7 +970,7 @@
       R.chrOsc.setAttribute("transform", `rotate(${f4(oscA)})`);
       R.chrOscUp.setAttribute("transform", `rotate(${f4(oscA)})`);
       R.chrRunner.setAttribute("transform", `rotate(${f4(r.chronoRunnerAngle % 360)})`);
-      R.chrMin.setAttribute("transform", `rotate(${f4(-90 - sgn * r.chronoMinutes)})`);
+      R.chrMin.setAttribute("transform", `rotate(${f4(-90 + sgn * r.chronoMinutes)})`);
       // the driving wheel turns a tooth per minute (finger, then jumper); the counting wheel follows through the mesh
       const dAng = -(c.chronoSense * (r.chronoMinuteSteps * 360 / c.minDriveZ) + c.minPhase);
       R.chrMinDrive.setAttribute("transform", `rotate(${f4(dAng % 360)})`);

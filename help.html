@@ -19,9 +19,11 @@ figure{margin:0}
 figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:4px;background:#fff}
 figcaption{font-size:13px;color:var(--muted);margin-top:3px}
 .strip{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;margin-top:12px}
-.strip.three{grid-template-columns:repeat(3,minmax(0,1fr));max-width:560px}
+.strip.three{grid-template-columns:repeat(3,minmax(0,1fr));max-width:720px}
+.strip.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.row.narrow{grid-template-columns:repeat(auto-fit,minmax(200px,240px))}
 .play{width:220px;max-width:100%}
-@media (max-width:560px){.strip{grid-template-columns:repeat(4,minmax(0,1fr))}.strip.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.strip{grid-template-columns:repeat(4,minmax(0,1fr))}.strip.three{grid-template-columns:repeat(3,minmax(0,1fr))}.strip.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -29,16 +31,116 @@ figcaption{font-size:13px;color:var(--muted);margin-top:3px}
   <h1>Calibre Bench help</h1>
   <a href="./">Back to the app</a>
 
+  <h2>Time and the going train</h2>
+  <div class="row">
+    <figure><img src="help/img/train.png" alt="The going train and escapement" loading="lazy"><figcaption>The going train and escapement</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Hands read the time</li>
+    <li data-claim>Seen from the front, the hands turn clockwise and each wheel turns against its neighbor</li>
+    <li data-claim>Center wheel turns once an hour, fourth wheel once a minute</li>
+    <li data-claim>Changing the beat rate alone makes the watch run slow or fast</li>
+    <li data-claim>Amplitude changes the swing, not the rate</li>
+    <li data-claim>A wrong tooth count shows a rate error</li>
+  </ul>
+
+  <h2>Every dial</h2>
+  <div class="strip four">
+    <figure><img src="help/img/dial-time.png" alt="Time only" loading="lazy"><figcaption>Time only</figcaption></figure>
+    <figure><img src="help/img/dial-date.png" alt="Date" loading="lazy"><figcaption>Date</figcaption></figure>
+    <figure><img src="help/img/dial-daydate.png" alt="Day-date" loading="lazy"><figcaption>Day-date</figcaption></figure>
+    <figure><img src="help/img/dial-dategmt.png" alt="Date + GMT" loading="lazy"><figcaption>Date + GMT</figcaption></figure>
+    <figure><img src="help/img/dial-datemoon.png" alt="Date + moon" loading="lazy"><figcaption>Date + moon</figcaption></figure>
+    <figure><img src="help/img/dial-complete.png" alt="Complete calendar" loading="lazy"><figcaption>Complete calendar</figcaption></figure>
+    <figure><img src="help/img/dial-annual.png" alt="Annual" loading="lazy"><figcaption>Annual</figcaption></figure>
+    <figure><img src="help/img/dial-perpetual.png" alt="Perpetual" loading="lazy"><figcaption>Perpetual</figcaption></figure>
+    <figure><img src="help/img/dial-central.png" alt="Central seconds" loading="lazy"><figcaption>Central seconds</figcaption></figure>
+    <figure><img src="help/img/dial-pr.png" alt="Power reserve" loading="lazy"><figcaption>Power reserve</figcaption></figure>
+    <figure><img src="help/img/dial-chrono.png" alt="Chronograph" loading="lazy"><figcaption>Chronograph</figcaption></figure>
+    <figure><img src="help/img/dial-perpchrono.png" alt="Perpetual chronograph" loading="lazy"><figcaption>Perpetual chronograph</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Nothing on the dial collides, on any combination</li>
+    <li data-claim>Window text stays inside its window</li>
+    <li data-claim>Set to now keeps every option</li>
+  </ul>
+
   <h2>Back, Front, Face</h2>
   <div class="row">
-    <figure><img src="help/img/view-back.png" alt="The movement from the back" loading="lazy"><figcaption>Back</figcaption></figure>
-    <figure><img src="help/img/view-front.png" alt="The movement from the front" loading="lazy"><figcaption>Front</figcaption></figure>
-    <figure><img src="help/img/view-face.png" alt="The dial over the movement" loading="lazy"><figcaption>Face</figcaption></figure>
+    <figure><img src="help/img/view-back.png" alt="Back" loading="lazy"><figcaption>Back</figcaption></figure>
+    <figure><img src="help/img/view-front.png" alt="Front" loading="lazy"><figcaption>Front</figcaption></figure>
+    <figure><img src="help/img/view-face.png" alt="Face" loading="lazy"><figcaption>Face</figcaption></figure>
   </div>
   <ul>
     <li data-claim>From the back, printing is mirrored and faded</li>
     <li data-claim>From the front, printing reads normally</li>
     <li data-claim>Face lays the dial over the movement and taps go through</li>
+    <li data-claim>Zoom buttons and presets frame the drawing</li>
+    <li data-claim>A pinch on a panel zooms the drawing and presses nothing</li>
+  </ul>
+
+  <h2>Crown</h2>
+  <div class="strip three">
+    <figure><img src="help/img/crown-0.png" alt="In: winds" loading="lazy"><figcaption>In: winds</figcaption></figure>
+    <figure><img src="help/img/crown-1.png" alt="First click: quick-sets" loading="lazy"><figcaption>First click: quick-sets</figcaption></figure>
+    <figure><img src="help/img/crown-2.png" alt="Out: sets the hands" loading="lazy"><figcaption>Out: sets the hands</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Crown in winds forward and slips back</li>
+    <li data-claim>Winding stops at full</li>
+    <li data-claim>Crown out moves the hands five minutes a tap</li>
+    <li data-claim>Setting past midnight moves the date forward only</li>
+    <li data-claim>First click sets the right thing on each watch</li>
+    <li data-claim>Quick-setting near midnight warns</li>
+    <li data-claim>Time only has no first click</li>
+    <li data-claim>Pulling the crown out stops the watch</li>
+  </ul>
+
+  <h2>Power</h2>
+  <div class="row narrow">
+    <figure><img src="help/img/power-down.png" alt="Run down" loading="lazy"><figcaption>Run down</figcaption></figure>
+    <figure><img src="help/img/crown-out.png" alt="Crown out" loading="lazy"><figcaption>Crown out</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>A full wind runs 52 hours</li>
+    <li data-claim>Low reserve turns the bar red</li>
+    <li data-claim>Running down shows a Wind button</li>
+  </ul>
+
+  <h2>Date</h2>
+  <div class="strip three">
+    <figure><img src="help/img/date-1.png" alt="9 pm" loading="lazy"><figcaption>9 pm</figcaption></figure>
+    <figure><img src="help/img/date-2.png" alt="11:42 pm" loading="lazy"><figcaption>11:42 pm</figcaption></figure>
+    <figure><img src="help/img/date-3.png" alt="12:20 am" loading="lazy"><figcaption>12:20 am</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Next date comes up from below</li>
+    <li data-claim>Date ring shows through the date window</li>
+    <li data-claim>Date changes at midnight</li>
+    <li data-claim>A simple date needs correcting after a 30-day month</li>
+  </ul>
+
+  <h2>Retrograde date</h2>
+  <div class="strip four">
+    <figure><img src="help/img/retro-0.png" alt="The 1st" loading="lazy"><figcaption>The 1st</figcaption></figure>
+    <figure><img src="help/img/retro-9.png" alt="The 10th" loading="lazy"><figcaption>The 10th</figcaption></figure>
+    <figure><img src="help/img/retro-19.png" alt="The 20th" loading="lazy"><figcaption>The 20th</figcaption></figure>
+    <figure><img src="help/img/retro-30.png" alt="The 31st" loading="lazy"><figcaption>The 31st</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Retrograde hand climbs the scale, then flies back after the last day</li>
+  </ul>
+
+  <h2>Day and month</h2>
+  <div class="row">
+    <figure><img src="help/img/mech-day.png" alt="Day star, month disc and moon wheel, from the front" loading="lazy"><figcaption>Day star, month disc and moon wheel, from the front</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Day changes at midnight</li>
+    <li data-claim>Day disc prints the dial day at its window</li>
+    <li data-claim>Day corrector only where the crown has no room for it</li>
+    <li data-claim>Day star clears the moon wheel</li>
+    <li data-claim>Month disc prints the dial month at the top</li>
   </ul>
 
   <h2>Moon phase</h2>
@@ -62,27 +164,81 @@ figcaption{font-size:13px;color:var(--muted);margin-top:3px}
     <li data-claim>Full moon shows whole</li>
     <li data-claim>Moon appears and disappears on its right side first</li>
     <li data-claim>Moon wheel sits behind the aperture</li>
+    <li data-claim>Match the real moon lands within half a day</li>
+    <li data-claim>Crown back moves the moon one day</li>
   </ul>
 
-  <h2>Date</h2>
-  <div class="strip three">
-    <figure><img src="help/img/date-1.png" alt="9 pm, 15 in the window" loading="lazy"><figcaption>9 pm</figcaption></figure>
-    <figure><img src="help/img/date-2.png" alt="11:42 pm, the finger is pushing" loading="lazy"><figcaption>11:42 pm</figcaption></figure>
-    <figure><img src="help/img/date-3.png" alt="Just after midnight, 16 in the window" loading="lazy"><figcaption>12:20 am</figcaption></figure>
-  </div>
-  <ul>
-    <li data-claim>Next date comes up from below</li>
-    <li data-claim>Date ring shows through the date window</li>
-  </ul>
-
-  <h2>Power and crown</h2>
+  <h2>GMT</h2>
   <div class="row">
-    <figure class="play"><img src="help/img/power-down.png" alt="The face panel with a Run down banner and a Wind button" loading="lazy"><figcaption>Run down</figcaption></figure>
-    <figure class="play"><img src="help/img/crown-out.png" alt="The face panel reading Stopped: crown pulled out" loading="lazy"><figcaption>Crown out</figcaption></figure>
+    <figure><img src="help/img/mech-gmt.png" alt="GMT wheels, from the front" loading="lazy"><figcaption>GMT wheels, from the front</figcaption></figure>
   </div>
   <ul>
-    <li data-claim>Running down shows a Wind button</li>
-    <li data-claim>Pulling the crown out stops the watch</li>
+    <li data-claim>GMT hand turns once in 24 hours and shows home time</li>
+    <li data-claim>GMT quick-set moves one hour and leaves the hands alone</li>
+    <li data-claim>GMT wheel turns with the hour wheel at half speed</li>
+  </ul>
+
+  <h2>Annual and perpetual calendars</h2>
+  <div class="row">
+    <figure><img src="help/img/mech-perpetual.png" alt="Month cam, grand lever, and the retrograde rack" loading="lazy"><figcaption>Month cam, grand lever, and the retrograde rack</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Annual calendar knows 30-day months but not February</li>
+    <li data-claim>Perpetual calendar knows leap years, up to 2100</li>
+    <li data-claim>Leap dots show the year in the cycle and stay on the dial</li>
+    <li data-claim>Correctors come with a month cam</li>
+  </ul>
+
+  <h2>Central seconds</h2>
+  <div class="row">
+    <figure><img src="help/img/mech-central.png" alt="Center seconds train" loading="lazy"><figcaption>Center seconds train</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Central seconds replaces the small seconds</li>
+  </ul>
+
+  <h2>Chronograph</h2>
+  <div class="row">
+    <figure><img src="help/img/chrono-reset.png" alt="Reset" loading="lazy"><figcaption>Reset</figcaption></figure>
+    <figure><img src="help/img/chrono-running.png" alt="Running at 12 min 34 s" loading="lazy"><figcaption>Running at 12 min 34 s</figcaption></figure>
+    <figure><img src="help/img/chrono-stopped.png" alt="Stopped" loading="lazy"><figcaption>Stopped</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Stopwatch starts, stops and resets</li>
+    <li data-claim>Standard chronograph ignores reset while running</li>
+    <li data-claim>Flyback restarts from zero in one press</li>
+    <li data-claim>Counters read 30 minutes and 12 hours</li>
+    <li data-claim>Minute counter hand turns with its gear</li>
+    <li data-claim>Running seconds keep going while the stopwatch is stopped</li>
+    <li data-claim>Chronograph rules out date and moon, retrograde, central seconds and the reserve hand</li>
+  </ul>
+
+  <h2>Automatic winding</h2>
+  <div class="row">
+    <figure><img src="help/img/mech-auto.png" alt="Rotor and reverser wheels" loading="lazy"><figcaption>Rotor and reverser wheels</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Rotor winds on both swings</li>
+    <li data-claim>Walking fills the spring and a desk day barely slows the loss</li>
+    <li data-claim>Automatic slips at full</li>
+    <li data-claim>Wrist choices come with automatic</li>
+    <li data-claim>Rotor hangs where its label points</li>
+  </ul>
+
+  <h2>Power reserve hand</h2>
+  <div class="row">
+    <figure><img src="help/img/mech-pr.png" alt="Reserve differential" loading="lazy"><figcaption>Reserve differential</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Reserve hand follows the spring</li>
+  </ul>
+
+  <h2>Explaining the parts</h2>
+  <ul>
+    <li data-claim>Every label points at its part</li>
+    <li data-claim>No label hides under the floating panel</li>
+    <li data-claim>The tour visits every part on this watch</li>
+    <li data-claim>Explain mode opens a card for a part</li>
   </ul>
 </main>
 <script>

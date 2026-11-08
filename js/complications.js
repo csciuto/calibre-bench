@@ -145,7 +145,7 @@
   // the disc's center, at MOON_ORBIT * R: wholly behind a hump at new moon, wholly clear of them at full. Model values.
   const MOON_ORBIT = 0.6, MOON_SIZE = 0.32;
   // Where the aperture can go on the dial (y of its base, dial units): the disc is built directly behind it.
-  const MOON_SPOTS = { top: { y: -18.3, R: 9.4 }, bottom: { y: 15, R: 5.75 } };
+  const MOON_SPOTS = { top: { y: -18.3, R: 9.4 }, bottom: { y: 17, R: 5.2 } };
   function moonAperture(R, x, y) {
     // Each hump runs from a cusp at the middle up over the moon's hiding place and meets the dome part way up its side,
     // so the moon can only come out on its inner side. Proportions searched against the rules on the help page.
@@ -507,10 +507,11 @@
     // which way the driving wheel turns in the drawing: cannon -> minute wheel -> hour wheel -> it, each mesh reversing
     d.fingerSense = -(Math.sign(CM.state(P, G, 600).center - CM.refState(P, G).center) || 1);
     d.dayStarR = 1.5; d.dayDiscR = 1.75;
-    d.dayStar = at(d.driver24, 4.3 + d.dayStarR - 0.4, -125);
+    const dayTurn = 190;   // the star, its finger and its phase turned together about the driving wheel, clear of the moon wheel
+    d.dayStar = at(d.driver24, 4.3 + d.dayStarR - 0.4, -125 + dayTurn);
     // day finger, like the date one, sized and timed so it has pushed the star half a point by midnight (model values)
     d.dayFinger = Math.hypot(d.dayStar[0] - d.driver24[0], d.dayStar[1] - d.driver24[1]) - d.dayStarR + 0.3;
-    d.dayPhase = 360 / 7 / 20;
+    d.dayPhase = 360 / 7 / 20 - dayTurn;
     // Moon disc: 59 teeth pushed one a day by a finger, then a jumper finishes the step. Its teeth have to be coarse
     // enough, and the finger short enough, that after the snap the finger is clear before it reaches the next tooth;
     // a fine 59-tooth wheel gets pushed several teeth. Module, finger and timing are model values found by search.
@@ -525,7 +526,7 @@
     d.moonM = 0.14 * moonK; d.moonMate = 0.3 * moonK; d.moonR = d.moonM * MOON_TEETH / 2; d.moonFinger = 3.2 * moonK; d.moonPhase = 0.76 - moonTurn;
     d.moonRa = CM.wheelShape(MOON_TEETH, d.moonM, d.moonMate).Ra;
     d.moonWindowR = spot.R * d.dialScale;
-    d.fingerAngles = { date: -15, day: -110, moon: 109 + moonTurn }; // driving wheel frame, at midnight
+    d.fingerAngles = { date: -15, day: -110 + dayTurn, moon: 109 + moonTurn }; // driving wheel frame, at midnight
     // GMT: hour wheel -> intermediate (reverses) -> GMT wheel on the center (same direction, half speed)
     d.gmtInter = at(Cd, CM.centerDistance(mHW, T.hourW, 20), 230);
     d.gmtInterZ = 20; d.gmtInterPZ = 10; d.gmtWheelZ = 40;
@@ -867,7 +868,7 @@
       if (f.chrono) rightItems.push(item); else leftItems.push(item);
     }
     col(1, rightItems); col(-1, leftItems);
-    if (f.perpetual) { const mw = L.windows.find(w => w.content === "monthyear"); L.leap = { x: (mw.x0 + mw.x1) / 2, y: mw.y1 + 2.2 }; }
+    if (f.perpetual) { const mw = L.windows.find(w => w.content === "monthyear"); L.leap = { x: (mw.x0 + mw.x1) / 2 - 3.8, y: mw.y1 + 2.2 }; }
     if (f.pr) L.pr = { x: 0, y: -8, r: 16, a0: -135, a1: -45 };
     if (f.moon) {
       const spot = f.chrono || f.pr ? "bottom" : "top";   // the registers and the reserve fan take the top
