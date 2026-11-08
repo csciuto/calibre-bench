@@ -92,7 +92,9 @@ button[aria-pressed="true"]{background:var(--brass);color:var(--sheet);border-co
 .facechrono{grid-area:chr;display:grid;grid-template-columns:auto auto 1fr;gap:4px;align-items:center}
 .facechrono button{height:30px;padding:0 8px;font-size:13px}
 .facechrono .mono{text-align:right;font-size:13px}
-.facemsg{grid-area:msg;margin:0;font-size:12px;line-height:1.35;color:var(--ink);background:var(--brass-fill);border-radius:3px;padding:5px 7px}
+.facedown{grid-area:msg;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;color:var(--off);border:1.5px solid var(--off);border-radius:3px;padding:4px 4px 4px 8px}
+.facedown[hidden]{display:none}
+.facedown button{height:30px;padding:0 12px;font-size:13px}
 .face #ampm.stopped{color:var(--off);font-weight:600}
 .transport{grid-area:tr;display:grid;grid-template-columns:auto auto 1fr auto;gap:4px;align-items:center}
 .transport button{min-width:34px;height:32px;padding:0 8px;font-family:var(--f-body);font-size:15px;line-height:1}
@@ -253,6 +255,7 @@ fieldset.opts legend{font-family:var(--f-display);font-size:14px;letter-spacing:
 .reserve{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
 .bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--brass);width:0}
+.bar.low i{background:var(--off)}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .datefig{font-family:var(--f-display);font-weight:600}
 .crownpart{cursor:pointer}

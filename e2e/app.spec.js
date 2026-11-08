@@ -30,6 +30,22 @@ test('pulling the crown out stops the watch', async ({ page }) => {
   await expect(page.locator('#crownHint')).toContainText('Pulled out');
 });
 
+test('a run-down watch says so, and Wind pushes the crown in and fills the spring', async ({ page }) => {
+  const banner = page.locator('#faceDown');
+  await expect(banner).toBeHidden();
+  await page.locator('#crownSeg label').filter({ hasText: 'Out' }).click();
+  await page.evaluate(() => { window.__calibre.watch().springLeft = 0.05; });
+  await expect(page.locator('#reserveBar')).toHaveClass(/low/);
+  await page.evaluate(() => { window.__calibre.watch().springLeft = 0; });
+  await expect(banner).toBeVisible();
+  await expect(banner).toContainText('Run down');
+  await banner.getByRole('button', { name: 'Wind' }).click();
+  await expect(banner).toBeHidden();
+  await expect(page.locator('#crownSeg input[value="0"]')).toBeChecked();
+  await expect(page.locator('#reserveBar')).not.toHaveClass(/low/);
+  expect(await page.evaluate(() => window.__calibre.watch().springLeft)).toBeCloseTo(await page.evaluate(() => window.__calibre.params.springTurns), 5);
+});
+
 test('chronograph: start, stop, reset', async ({ page }) => {
   await page.locator('label').filter({ hasText: 'Three-register' }).click();
   await expect(page.locator('#chronoRow')).toBeVisible();

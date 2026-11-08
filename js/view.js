@@ -666,13 +666,7 @@
     cfgWrap.appendChild(lab);
   }
   cfgWrap.addEventListener("change", e => { if (e.target.name === "cfg") { W.setConfig(e.target.value); applyFeatures(); } });
-  for (const id of ["chrOff", "chrOn", "chrFly"]) $(id).addEventListener("change", e => {
-    const was = W.features().chrono;
-    W.setOption("chrono", e.target.value); applyFeatures();
-    const now = W.features().chrono;
-    if (now && !was) faceNote(marked("The big center hand is now the stopwatch's, so it waits at 12 until you press Start {{mono7750}}. The running seconds moved to the small dial at 9 {{mono7750}}."));
-    else if (!now && was) faceNote("");
-  });
+  for (const id of ["chrOff", "chrOn", "chrFly"]) $(id).addEventListener("change", e => { W.setOption("chrono", e.target.value); applyFeatures(); });
   const calWrap = $("calRadios");
   for (const c of CX.CAL_TYPES) {
     const lab = document.createElement("label");
@@ -760,14 +754,12 @@
   }
   $("chrStart").onclick = pushStart; $("chrReset").onclick = pushReset;
   $("fStart").onclick = pushStart; $("fReset").onclick = pushReset;
-  // a short note on the face, e.g. when switching the chronograph on moves the seconds
-  let faceMsgTimer = null;
-  function faceNote(html, ms) {
-    const m = $("faceMsg"); clearTimeout(faceMsgTimer);
-    if (!html) { m.hidden = true; return; }
-    m.innerHTML = html; m.hidden = false;
-    faceMsgTimer = setTimeout(() => { m.hidden = true; }, ms || 9000);
-  }
+  // run-down banner: push the crown in and wind to full
+  $("windUp").onclick = () => {
+    if (W.crownPos !== 0) { W.setCrown(0); syncControls(); }
+    while (!W.turnCrown(0.5).full);
+    crownHint(""); render();
+  };
   // moon: set it with the crown at the first click, turning back; "Match" does the turning for you
   let moonKey = "";
   const moonKeyNow = () => [W.cal.moon, W.cal.date, W.cal.month, W.cal.year, Math.floor(W.handTime() / 3600)].join("|");
@@ -969,6 +961,8 @@
     const state = W.hacked() ? "· stopped by the crown" : W.springLeft <= 1e-9 ? "· out of power" : st.inLift ? "· impulse" : "· locked";
     $("readout").textContent = `beat ${st.beat.toLocaleString("en-US")} · balance ${st.theta.toFixed(0).padStart(4)}° · lever ${(st.lever / D2R).toFixed(1)}° ${state}`;
     $("reserveFill").style.width = (r.springFraction * 100).toFixed(1) + "%";
+    $("reserveBar").classList.toggle("low", r.springFraction < 0.1);
+    $("faceDown").hidden = W.springLeft > 1e-9;
     $("reserveBar").setAttribute("aria-valuenow", r.reserveHours.toFixed(0)); $("reserveBar").setAttribute("aria-valuemax", (P.springTurns * CM.periods(P).barrel / 3600).toFixed(0));
     $("reserveText").textContent = r.reserveHours.toFixed(1) + " h";
     // live numbers in an open part card, ~8 times a second, skipped while the reader is selecting text
