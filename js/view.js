@@ -47,8 +47,9 @@
     const pat5 = el("pattern", { id: "mm5", width: 5, height: 5, patternUnits: "userSpaceOnUse" }, defs);
     el("rect", { width: 5, height: 5, fill: "url(#mm)" }, pat5);
     el("path", { d: "M5 0L0 0 0 5", class: "glm", fill: "none" }, pat5);
-    el("rect", { x: -60, y: -60, width: 160, height: 140, fill: "url(#mm5)", "aria-hidden": "true" }, svg);
+    el("rect", { x: -110, y: -60, width: 220, height: 140, fill: "url(#mm5)", "aria-hidden": "true" }, svg);
     const scene = el("g", {}, svg), g = G, s = g.shapes, A = P.angles, sw = "0.9";
+    R.scene = scene;
     const at = p => `translate(${f4(p[0])} ${f4(p[1])})`;
     const grp = (p, key) => { const o = el("g", { transform: at(p) }, scene); if (key) tagPart(o, key, true); return el("g", {}, o); };
 
@@ -140,6 +141,7 @@
     drawPRDiff(scene);
     drawProgram(scene);
 
+    R.dialLayer = el("g", {}, svg);
     drawLabels();
   }
 
@@ -219,13 +221,46 @@
 
   // ---------- view (pan / zoom) ----------
   const V = { cx: 10, cy: 3, k: 20 };
+  // The model is drawn from the back. Front is that drawing mirrored; Face is Front with the dial on top.
+  let side = "back";
+  const mirrored = () => side !== "back";
+  function applySide() {
+    const m = mirrored(), flip = m ? "scale(-1 1)" : "", dial = $("dial"), onPlan = side === "face";
+    R.scene.setAttribute("transform", flip);
+    for (const t of R.scene.querySelectorAll("text")) {   // printing stays readable in the mirror
+      if (!t.dataset.base) t.dataset.base = t.getAttribute("transform");
+      t.setAttribute("transform", m ? `${t.dataset.base} scale(-1 1)` : t.dataset.base);
+    }
+    for (const n of labG.querySelectorAll("line,circle")) n.setAttribute("transform", flip);
+    for (const t of labG.querySelectorAll("text")) t.setAttribute("text-anchor", m ? "end" : "start");
+    if (onPlan) {
+      // sized so the dial's date window lands on the ring's
+      const w = (X.dial.ringTeeth + X.dial.ringOut) / 2 / 33.75 * 100;
+      for (const [k, v] of Object.entries({ x: -G.mc[0] - w / 2, y: G.mc[1] - w / 2, width: w, height: w })) dial.setAttribute(k, f4(v));
+      R.dialLayer.appendChild(dial);
+    } else if (dial.parentNode !== $("face")) {
+      for (const k of ["x", "y", "width", "height"]) dial.removeAttribute(k);
+      $("face").insertBefore(dial, $("ampm"));
+    }
+    if (onPlan) labG.setAttribute("display", "none"); else labG.removeAttribute("display");
+    $("face").classList.toggle("onplan", onPlan);
+    for (const [id, v] of [["sideBack", "back"], ["sideFront", "front"], ["sideFace", "face"]]) $(id).setAttribute("aria-pressed", side === v);
+    applyView();
+  }
+  function setSide(next) {
+    const was = mirrored();
+    side = next;
+    if (mirrored() !== was) V.cx = -V.cx;
+    applySide();
+    if (next === "face") { const r = (X.dial.ringTeeth + X.dial.ringOut) / 2 / 33.75 * 50; fitBox(G.mc[0] - r, G.mc[1] - r, G.mc[0] + r, G.mc[1] + r); }
+  }
   function applyView() {
     const w = svg.clientWidth || 800, h = svg.clientHeight || 500;
     svg.setAttribute("viewBox", `${V.cx - w / 2 / V.k} ${V.cy - h / 2 / V.k} ${w / V.k} ${h / V.k}`);
     if (!labG) return;
     const fs = 11.5 / V.k, fs2 = 10 / V.k;
     for (const g of labG.children) {
-      const x = +g.dataset.x, y = +g.dataset.y, top = g.dataset.side === "top";
+      const x = (mirrored() ? -1 : 1) * g.dataset.x, y = +g.dataset.y, top = g.dataset.side === "top";
       const [a, b] = g.querySelectorAll("text");
       const y1 = top ? y - (b ? fs * 1.35 + fs2 * 0.35 : fs * 0.35) : y + fs * 1.05;
       a.setAttribute("x", x); a.setAttribute("y", y1); a.setAttribute("font-size", fs);
@@ -257,6 +292,7 @@
   }
   // Fit a box (mm) into the drawing, keeping clear of the toolbar on top and the readout below.
   function fitBox(x0, y0, x1, y1, covered) {
+    if (mirrored()) [x0, x1] = [-x1, -x0];
     const w = svg.clientWidth || 800, h = svg.clientHeight || 500;
     const tools = document.querySelector(".tools"), top = (tools ? tools.offsetHeight : 40) + 14, side = 12;
     let bottom = Math.max(38, (covered || 0) + 12);
@@ -315,10 +351,18 @@
     fitBox(f[0][0] - r, f[0][1] - r, f[0][0] + r, f[0][1] + r, covered);
   }
   $("vFit").onclick = fitAll; $("vEsc").onclick = fitEsc; $("vMw").onclick = fitMw; $("vChr").onclick = fitChr; $("vAuto").onclick = fitAuto;
+  $("sideBack").onclick = () => setSide("back"); $("sideFront").onclick = () => setSide("front"); $("sideFace").onclick = () => setSide("face");
 
   // ---------- pointer: pan, pinch, tap to explain, hover to preview ----------
   const card = $("card");
-  const ptrs = new Map(); let pinch = null, press = null;
+  // Gestures belong to the whole stage, so a finger landing on a floating panel still counts toward a pinch.
+  const stage = svg.closest(".stage");
+  const ptrs = new Map(); let pinch = null, press = null, pinched = false;
+  function startPinch() {
+    if (ptrs.size !== 2) return;
+    const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), k: V.k }; pinched = true;
+  }
+  stage.addEventListener("click", e => { if (pinched) { e.preventDefault(); e.stopPropagation(); } }, true); // lifting a pinch off a button isn't a press
   const tip = $("tip");
   function zoomAt(cx, cy, f) {
     const r = svg.getBoundingClientRect(), px = cx - r.left - r.width / 2, py = cy - r.top - r.height / 2;
@@ -344,7 +388,11 @@
     if (e.key === "?" && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) { e.preventDefault(); setHelp(!helpOn); }
     else if (e.key === "Escape" && helpOn && $("card").hidden) setHelp(false);
   });
-  svg.addEventListener("pointerdown", e => {
+  stage.addEventListener("pointerdown", e => {
+    if (!svg.contains(e.target)) {
+      if (e.pointerType === "touch") { ptrs.set(e.pointerId, [e.clientX, e.clientY]); press = null; startPinch(); }
+      return;
+    }
     try { svg.setPointerCapture(e.pointerId); } catch (_) {}
     // dragging is for panning and turning the crown, never for selecting label text
     if (e.pointerType === "mouse" && e.button === 0) {
@@ -357,10 +405,10 @@
     const pp = partOf(e.target); if (pp && ACTION_HINT[pp.dataset.part]) tipQuiet = pp.dataset.part;
     ptrs.set(e.pointerId, [e.clientX, e.clientY]); svg.classList.add("dragging");
     press = ptrs.size === 1 ? { id: e.pointerId, x: e.clientX, y: e.clientY, part: partOf(e.target), moved: 0, roll: 0 } : null;
-    if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), k: V.k }; }
+    startPinch();
   });
-  svg.addEventListener("pointermove", e => {
-    if (!ptrs.has(e.pointerId)) { if (e.pointerType === "mouse") hoverTip(e); return; }
+  stage.addEventListener("pointermove", e => {
+    if (!ptrs.has(e.pointerId)) { if (e.pointerType === "mouse" && svg.contains(e.target)) hoverTip(e); return; }
     const prev = ptrs.get(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]);
     if (press && press.id === e.pointerId) press.moved = Math.max(press.moved, Math.hypot(e.clientX - press.x, e.clientY - press.y));
     // dragging on the crown rolls it like a thumb would: up turns it forward, down turns it back
@@ -369,7 +417,7 @@
       while (Math.abs(press.roll) >= CROWN_STEP_PX) { const dir = Math.sign(press.roll); press.roll -= dir * CROWN_STEP_PX; doTurn(dir); }
       return;
     }
-    if (ptrs.size === 1) { V.cx -= (e.clientX - prev[0]) / V.k; V.cy -= (e.clientY - prev[1]) / V.k; applyView(); }
+    if (ptrs.size === 1 && press) { V.cx -= (e.clientX - prev[0]) / V.k; V.cy -= (e.clientY - prev[1]) / V.k; applyView(); }
     else if (ptrs.size === 2 && pinch) {
       const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]);
       zoomAt((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, pinch.k * d / pinch.d / V.k);
@@ -379,6 +427,7 @@
     const wasTap = press && press.id === e.pointerId && press.moved < 6 && e.type === "pointerup";
     const part = press && press.part;
     ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) svg.classList.remove("dragging");
+    if (!ptrs.size && pinched) setTimeout(() => { pinched = false; }, 350);
     if (press && press.id === e.pointerId) press = null;
     if (!wasTap) return;
     // "?" mode: a tap explains the part. Otherwise a tap works the parts you operate and leaves the rest alone.
@@ -386,7 +435,7 @@
     if (part && ACTION_HINT[part.dataset.part] && !(e.target.closest && e.target.closest(".labels"))) actOn(part.dataset.part);
     else if (!part && !$("card").hidden) closeCard(false);
   };
-  svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
+  stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
   svg.addEventListener("pointerleave", hideTip);
   // Wheel: Ctrl/⌘ + wheel (and trackpad pinch, which arrives as ctrl + wheel) zooms. A plain wheel pans when the
   // drawing has its own pane (desktop); when the page itself scrolls (narrow screens) it's left alone so the page scrolls.
@@ -399,7 +448,7 @@
     hintTimer = setTimeout(() => navHint.classList.remove("flash"), 1600);
   }
   let wheelRoll = 0;
-  svg.addEventListener("wheel", e => {
+  stage.addEventListener("wheel", e => {
     // the wheel over the crown turns it
     const onCrown = partOf(e.target);
     if (onCrown && onCrown.dataset.part === "crown" && !e.ctrlKey && !e.metaKey) {
@@ -795,7 +844,7 @@
     const d24At0 = dialAngles(0).driver24;
     for (const [k, a] of Object.entries(X.dial.fingerAngles)) R.fingers[k].setAttribute("transform", `rotate(${f4(a - d24At0)})`);
     applyVisibility();
-    Object.assign(V, view); applyView();
+    Object.assign(V, view); applySide();
     if (!card.hidden && C.mode === "part") { highlight(C.key); $("cardStats").innerHTML = statsHtml(GL.PARTS[C.key]); }
   }
   const pad = n => String(Math.floor(n)).padStart(2, "0");

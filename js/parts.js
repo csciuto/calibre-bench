@@ -36,8 +36,8 @@ window.CalibreParts = function (ctx) {
     const d = X().dial, Cd = G().mc, sw = "0.9", T = P.teeth;
     const at = p => `translate(${f4(p[0])} ${f4(p[1])})`;
     const part = (key, p, need) => { const o = tagPart(el("g", { transform: at(p) }, scene), key, true); if (need) needs(o, need); return o; };
-    // date ring: a thin printed ring with 31 teeth on its inside edge. It turns the way its finger pushes it
-    // (clockwise in this view), so the dates are printed running the other way round.
+    // date ring: a thin printed ring with 31 teeth on its inside edge. The drawing is the back of the movement, where
+    // the ring turns clockwise and its window is on the left; each number sits upright as it reaches the window.
     const ring = part("dateRing", Cd, "date");
     R().dateRing = el("g", {}, ring);
     let teeth = "";
@@ -49,13 +49,13 @@ window.CalibreParts = function (ctx) {
     el("path", { d: CM.circ(d.ringOut) + CM.circ(d.ringTeeth), class: "wheel", "stroke-width": sw, "fill-rule": "evenodd" }, R().dateRing);
     el("path", { d: teeth, class: "wheel", "stroke-width": sw, fill: "none" }, R().dateRing);
     for (let k = 0; k < 31; k++) {
-      const a = -k * 360 / 31, rr = (d.ringTeeth + d.ringOut) / 2;
+      const a = 180 - k * 360 / 31, rr = (d.ringTeeth + d.ringOut) / 2;
       const tx = el("text", { class: "ringnum", "font-size": 0.62, "text-anchor": "middle", "dominant-baseline": "central",
-        transform: `rotate(${f4(a)}) translate(${f4(rr)} 0) rotate(90)` }, R().dateRing);
+        transform: `rotate(${f4(a)}) translate(${f4(rr)} 0) rotate(180)` }, R().dateRing);
       tx.textContent = String(k + 1);
     }
-    // fixed date window marker at 3 o'clock
-    el("path", { d: rectPath(d.ringTeeth - 0.05, -0.55, d.ringOut + 0.05, 0.55), class: "window", "stroke-width": "1.2" }, ring);
+    // fixed date window marker: 3 o'clock from the front, so on the left from the back
+    el("path", { d: rectPath(-(d.ringOut + 0.05), -0.55, -(d.ringTeeth - 0.05), 0.55), class: "window", "stroke-width": "1.2" }, ring);
 
     // GMT intermediate and GMT wheel (on the center, under the hour wheel)
     const gi = part("gmtInter", d.gmtInter, "gmt");

@@ -9,6 +9,7 @@ Built with [Claude](https://claude.ai) and [Claude Code](https://claude.com/clau
 ## What's in it
 
 - **Going train and escapement.** Cycloidal wheels and pinions sized by module, a 15-tooth club-tooth escape wheel and pallet stones whose contact is solved geometrically (the wheel recoils slightly as a stone unlocks, and never passes through one), a balance at 18,000 to 36,000 A/h.
+- **Back, Front, Face.** The drawing is the back of the movement; Front mirrors it, and Face lays the dial over it so it zooms with the drawing.
 - **Winding and setting.** Crown with three positions, sliding pinion, setting lever and yoke as rigid parts, quick-set, hacking stop lever, power reserve.
 - **Complications.** Date, day-date, moon phase, GMT, complete calendar; simple, annual and perpetual calendar types; retrograde date; central seconds; a 7750-style cam-operated chronograph with oscillating pinion (standard or flyback); automatic winding with reversing wheels; power reserve differential.
 - **Explanations.** Hover for a part's name, press **?** and tap for the full card, or follow the power from the crown. Every statement is marked: a numbered source, *model value*, *worked out*, or *citation needed*.

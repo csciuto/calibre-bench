@@ -46,6 +46,70 @@ test('a run-down watch says so, and Wind pushes the crown in and fills the sprin
   expect(await page.evaluate(() => window.__calibre.watch().springLeft)).toBeCloseTo(await page.evaluate(() => window.__calibre.params.springTurns), 5);
 });
 
+test('date and moon move the right way, and Front mirrors the moon', async ({ page }) => {
+  await page.locator('label').filter({ hasText: 'Date + moon phase' }).first().click();
+  const measure = () => page.evaluate(async () => {
+    const W = window.__calibre.watch(), frame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const mid = e => { const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; };
+    const plan = document.getElementById('plan'), nums = [...plan.querySelectorAll('.ringnum')].filter(t => +t.getAttribute('font-size') > 0.6);
+    const num = n => mid(nums.find(t => t.textContent === String(n)));
+    const ring = mid(plan.querySelector('[data-part="dateRing"]'));
+    W.cal.date = 14; await frame();
+    const disc = plan.querySelector('[data-part="moonDisc"]'), hub = mid(disc.querySelector('.moonsky'));
+    const topMoon = () => [...disc.querySelectorAll('.moonbody')].map(mid).sort((a, b) => a[1] - b[1])[0][0] - hub[0];
+    const lit = document.querySelector('#dial .dmoonlit'), sky = document.querySelector('#dial .dmoondark');
+    const [cx, cy, r] = ['cx', 'cy', 'r'].map(k => +sky.getAttribute(k));
+    const sides = () => [lit.isPointInFill(new DOMPoint(cx + 0.7 * r, cy)), lit.isPointInFill(new DOMPoint(cx - 0.7 * r, cy))];
+    W.cal.moon = 8; await frame(); const waxing = { x: topMoon(), lit: sides() };
+    W.cal.moon = 22; await frame(); const waning = { x: topMoon(), lit: sides() };
+    return { next: num(16)[1] - num(15)[1], windowX: num(15)[0] - ring[0], waxing, waning };
+  });
+  const back = await measure();
+  expect(back.next, 'next date is below').toBeGreaterThan(0);
+  expect(back.windowX, 'window on the left from the back').toBeLessThan(0);
+  expect(back.waxing.x, 'the moon comes in from the right, seen from the back').toBeGreaterThan(0);
+  await page.locator('#sideFront').click();
+  const front = await measure();
+  expect(front.next, 'next date is below').toBeGreaterThan(0);
+  expect(front.windowX, 'window at 3 o\'clock').toBeGreaterThan(0);
+  expect(front.waxing.x, 'the moon comes in from the left').toBeLessThan(0);
+  expect(front.waning.x, 'and leaves on the right').toBeGreaterThan(0);
+  expect(front.waxing.lit, 'lit on the right while waxing').toEqual([true, false]);
+  expect(front.waning.lit, 'dark on the right while waning').toEqual([false, true]);
+});
+
+test('Face puts the dial on the drawing and Back returns it to the panel', async ({ page }) => {
+  await expect(page.locator('#face #dial')).toBeAttached();
+  await page.locator('#sideFace').click();
+  await expect(page.locator('#plan #dial')).toBeVisible();
+  await expect(page.locator('#face #dial')).toHaveCount(0);
+  await expect(page.locator('#plan .labels')).toBeHidden();
+  await expect(page.locator('#sideFace')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('#sideBack').click();
+  await expect(page.locator('#face #dial')).toBeVisible();
+  await expect(page.locator('#plan #dial')).toHaveCount(0);
+  await expect(page.locator('#plan .labels')).toBeVisible();
+});
+
+test('a pinch with one finger on a panel zooms the drawing and does not press the button', async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const svg = document.getElementById('plan'), btn = document.getElementById('faster'), r = svg.getBoundingClientRect();
+    const fire = (el, type, id, x, y) => el.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: id, pointerType: 'touch', clientX: x, clientY: y }));
+    const width = () => svg.viewBox.baseVal.width, before = width(), cy = r.top + r.height / 2;
+    fire(btn, 'pointerdown', 1, r.left + r.width / 2 - 40, cy);
+    fire(svg, 'pointerdown', 2, r.left + r.width / 2 + 40, cy);
+    fire(svg, 'pointermove', 2, r.left + r.width / 2 + 120, cy);
+    const zoomed = width();
+    fire(svg, 'pointerup', 2, r.left + r.width / 2 + 120, cy);
+    fire(btn, 'pointerup', 1, r.left + r.width / 2 - 40, cy);
+    const speed = document.getElementById('speedLbl').textContent;
+    btn.click();
+    return { before, zoomed, same: document.getElementById('speedLbl').textContent === speed };
+  });
+  expect(result.zoomed).toBeLessThan(result.before / 1.5);
+  expect(result.same).toBe(true);
+});
+
 test('chronograph: start, stop, reset', async ({ page }) => {
   await page.locator('label').filter({ hasText: 'Three-register' }).click();
   await expect(page.locator('#chronoRow')).toBeVisible();

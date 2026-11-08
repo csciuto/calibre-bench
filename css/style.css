@@ -48,7 +48,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-siz
 header{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
 h1{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:.02em;margin:0;text-transform:uppercase}
 .sub{color:var(--muted);font-family:var(--f-display);font-size:16px;letter-spacing:.06em;text-transform:uppercase}
-.stage{position:relative;border:1px solid var(--line);background:var(--sheet);overflow:hidden;border-radius:4px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.stage{touch-action:none;position:relative;border:1px solid var(--line);background:var(--sheet);overflow:hidden;border-radius:4px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #plan{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
 #plan.dragging{cursor:grabbing}
 .tools{position:absolute;top:8px;left:8px;display:flex;flex-wrap:wrap;gap:6px}
@@ -57,6 +57,7 @@ button:hover{border-color:var(--brass)}
 button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
 button[aria-pressed="true"]{background:var(--brass);color:var(--sheet);border-color:var(--brass)}
 .readout{display:flex;align-items:center;gap:2px;position:absolute;left:8px;bottom:8px;font-family:var(--f-mono);font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--sheet) 85%,transparent);padding:4px 8px;border-radius:3px;font-variant-numeric:tabular-nums}
+.sides{display:flex;gap:2px}
 .zoom{position:absolute;top:8px;right:8px;display:grid;gap:4px}
 .zoom button{width:34px;height:34px;padding:0;font-size:20px;line-height:1;font-family:var(--f-body);text-transform:none}
 .zoom .helpbtn{margin-top:6px;font-weight:700}
@@ -71,6 +72,7 @@ button[aria-pressed="true"]{background:var(--brass);color:var(--sheet);border-co
 @media (max-width:999.98px){
   .tools{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px;right:52px}
   .tools::-webkit-scrollbar{display:none}
+  .sides{order:-1;flex:none}
   .tools button{font-size:13px;padding:4px 8px;white-space:nowrap;flex:none}
   .readout{font-size:10.5px;padding:2px 6px;right:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .readout .info{width:18px;height:18px;flex:none}
@@ -181,7 +183,10 @@ input.tc{width:52px;font-family:var(--f-mono);font-size:14px;padding:3px 5px;bor
 .hatch{stroke:var(--steel);opacity:.8}
 .crownbody{fill:var(--brass-fill);stroke:var(--brass)}
 .column{fill:var(--steel);stroke:none}
-#dial{width:172px;height:172px;display:block}
+.face #dial{width:172px;height:172px;display:block}
+#plan #dial{pointer-events:none;opacity:.85}
+#plan #dial *{vector-effect:none}
+.face.onplan .facemin{visibility:hidden}
 .dface{fill:var(--paper);stroke:var(--line);stroke-width:1.5}
 .dtick{stroke:var(--ink)}
 .dsub{fill:none;stroke:var(--line);stroke-width:.8}
