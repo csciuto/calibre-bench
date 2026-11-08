@@ -9,7 +9,6 @@ for (const scheme of ['light', 'dark']) {
     await page.emulateMedia({ colorScheme: scheme });
     await page.setViewportSize({ width: 1200, height: 630 });
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
     await expect(page.locator('#plan [data-part="balance"]').first()).toBeVisible();
     await expect(page.locator('#handsRead')).not.toHaveText('--:--:--');
     expect(errors).toEqual([]);
