@@ -196,8 +196,7 @@ input.tc{width:52px;font-family:var(--f-mono);font-size:14px;padding:3px 5px;bor
 .dnum{font-family:var(--f-display);font-weight:600;font-size:4.2px;fill:var(--steel)}
 .dwin{fill:var(--sheet);stroke:var(--muted);stroke-width:.6}
 .dwintext{font-family:var(--f-display);font-weight:700;font-size:6.6px;letter-spacing:.04em;fill:var(--ink)}
-.dmoonsky{fill:var(--line)}
-.dmoondark{fill:#1e3358}
+.dmoonsky{fill:#1e3358;stroke:var(--muted);stroke-width:.5}
 .dmoonlit{fill:#e8c766}
 .dhand{fill:var(--ink)}
 .dhs{fill:var(--ruby)}

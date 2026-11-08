@@ -57,9 +57,11 @@ test('date and moon move the right way, and Front mirrors the moon', async ({ pa
     W.cal.date = 14; await frame();
     const disc = plan.querySelector('[data-part="moonDisc"]'), hub = mid(disc.querySelector('.moonsky'));
     const topMoon = () => [...disc.querySelectorAll('.moonbody')].map(mid).sort((a, b) => a[1] - b[1])[0][0] - hub[0];
-    const lit = document.querySelector('#dial .dmoonlit'), sky = document.querySelector('#dial .dmoondark');
-    const [cx, cy, r] = ['cx', 'cy', 'r'].map(k => +sky.getAttribute(k));
-    const sides = () => [lit.isPointInFill(new DOMPoint(cx + 0.7 * r, cy)), lit.isPointInFill(new DOMPoint(cx - 0.7 * r, cy))];
+    const moon = document.querySelector('#dial .dmoonlit'), sky = document.querySelector('#dial .dmoonsky');
+    const sides = () => {   // which edges of the moon show in the aperture: [right, left]
+      const [cx, cy, r] = ['cx', 'cy', 'r'].map(k => +moon.getAttribute(k));
+      return [sky.isPointInFill(new DOMPoint(cx + r, cy)), sky.isPointInFill(new DOMPoint(cx - r, cy))];
+    };
     W.cal.moon = 8; await frame(); const waxing = { x: topMoon(), lit: sides() };
     W.cal.moon = 22; await frame(); const waning = { x: topMoon(), lit: sides() };
     const m = nums[0].getScreenCTM();
@@ -77,8 +79,8 @@ test('date and moon move the right way, and Front mirrors the moon', async ({ pa
   expect(front.windowX, 'window at 3 o\'clock').toBeGreaterThan(0);
   expect(front.waxing.x, 'the moon comes in from the left').toBeLessThan(0);
   expect(front.waning.x, 'and leaves on the right').toBeGreaterThan(0);
-  expect(front.waxing.lit, 'lit on the right while waxing').toEqual([true, false]);
-  expect(front.waning.lit, 'dark on the right while waning').toEqual([false, true]);
+  expect(front.waxing.lit, 'right edge shows first while waxing').toEqual([true, false]);
+  expect(front.waning.lit, 'right edge is covered first while waning').toEqual([false, true]);
 });
 
 test('Face puts the dial on the drawing and Back returns it to the panel', async ({ page }) => {

@@ -12,11 +12,6 @@ window.CalibreDial = function (ctx) {
     for (let i = 0; i < n; i++) dtick(cx, cy, r - (i % major ? 1.2 : 2.4), r - 0.4, i * 360 / n, i % major ? 0.4 : 0.8);
   }
   const hand = (len, tail, w, cls) => el("path", { d: `M${-w / 2} ${tail}L${-w / 4} ${-len}L${w / 4} ${-len}L${w / 2} ${tail}Z`, class: cls }, dial);
-  function moonPath(cx, cy, r, p) {
-    const k = Math.cos(2 * Math.PI * p), waxing = p < 0.5, rx = Math.max(0.01, r * Math.abs(k));
-    const outer = waxing ? 1 : 0, term = waxing ? (k > 0 ? 0 : 1) : (k > 0 ? 1 : 0);
-    return `M${cx} ${cy - r}A${r} ${r} 0 0 ${outer} ${cx} ${cy + r}A${f4(rx)} ${r} 0 0 ${term} ${cx} ${cy - r}Z`;
-  }
   // a fan of ticks around (x, y) between angles a0 and a1 (degrees, 0 = 3 o'clock, y down), with labels at chosen steps
   function fan(F, n, labels) {
     const pt = (r, a) => [F.x + r * Math.cos(a * D2R), F.y + r * Math.sin(a * D2R)];
@@ -60,9 +55,13 @@ window.CalibreDial = function (ctx) {
     }
     if (L.moon) {
       const m = L.moon;
-      el("circle", { cx: m.x, cy: m.y, r: m.r + 1.2, class: "dmoonsky" }, dial);
-      el("circle", { cx: m.x, cy: m.y, r: m.r, class: "dmoondark" }, dial);
-      H.moon = el("path", { class: "dmoonlit" }, dial);
+      // the usual aperture: a dome with two humps along the bottom, and the disc's moon sliding behind them
+      const R = m.r * 1.25, o = R / 2, y = m.y + o;
+      const d = `M${f4(m.x - R)} ${f4(y)}A${f4(R)} ${f4(R)} 0 0 1 ${f4(m.x + R)} ${f4(y)}A${f4(o)} ${f4(o)} 0 0 0 ${f4(m.x)} ${f4(y)}A${f4(o)} ${f4(o)} 0 0 0 ${f4(m.x - R)} ${f4(y)}Z`;
+      el("path", { d, class: "dmoonsky" }, dial);
+      el("path", { d }, el("clipPath", { id: "dmoonclip" }, dial));
+      H.moon = el("circle", { r: f4(o * 0.85), class: "dmoonlit" }, el("g", { "clip-path": "url(#dmoonclip)" }, dial));
+      H.moonAt = { x: m.x, y, o };
     }
     if (L.smallSeconds) H.ss = hand(8.5, 2.5, 0.9, "dhs");
     if (f.chrono) { H.cm = hand(8.5, 2, 1.1, "dhc"); H.ch = hand(8.5, 2, 1.1, "dhc"); }
@@ -108,7 +107,10 @@ window.CalibreDial = function (ctx) {
     if (H.leap) H.leap.forEach((c, k) => c.classList.toggle("on", k === r.leapIndex));
     if (H.retro) H.retro.setAttribute("transform", `translate(${L.retro.x} ${L.retro.y}) rotate(${f4(L.retro.a0 + (L.retro.a1 - L.retro.a0) * r.retroFraction)})`);
     if (H.pr) H.pr.setAttribute("transform", `translate(${L.pr.x} ${L.pr.y}) rotate(${f4(L.pr.a0 + (L.pr.a1 - L.pr.a0) * r.springFraction)})`);
-    if (H.moon) H.moon.setAttribute("d", moonPath(L.moon.x, L.moon.y, L.moon.r, r.moonPhase));
+    if (H.moon) { // new at the left hump, full at the top, new again at the right hump: half a disc turn per lunation
+      const a = (180 + 180 * r.moonPhase) * D2R, M = H.moonAt;
+      H.moon.setAttribute("cx", f4(M.x + M.o * Math.cos(a))); H.moon.setAttribute("cy", f4(M.y + M.o * Math.sin(a)));
+    }
   }
   return { dial, hand, buildDial, renderDial };
 };
