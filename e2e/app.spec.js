@@ -62,14 +62,17 @@ test('date and moon move the right way, and Front mirrors the moon', async ({ pa
     const sides = () => [lit.isPointInFill(new DOMPoint(cx + 0.7 * r, cy)), lit.isPointInFill(new DOMPoint(cx - 0.7 * r, cy))];
     W.cal.moon = 8; await frame(); const waxing = { x: topMoon(), lit: sides() };
     W.cal.moon = 22; await frame(); const waning = { x: topMoon(), lit: sides() };
-    return { next: num(16)[1] - num(15)[1], windowX: num(15)[0] - ring[0], waxing, waning };
+    const m = nums[0].getScreenCTM();
+    return { printMirrored: m.a * m.d - m.b * m.c < 0, next: num(16)[1] - num(15)[1], windowX: num(15)[0] - ring[0], waxing, waning };
   });
   const back = await measure();
+  expect(back.printMirrored, 'dial-side printing reads backwards from the back').toBe(true);
   expect(back.next, 'next date is below').toBeGreaterThan(0);
   expect(back.windowX, 'window on the left from the back').toBeLessThan(0);
   expect(back.waxing.x, 'the moon comes in from the right, seen from the back').toBeGreaterThan(0);
   await page.locator('#sideFront').click();
   const front = await measure();
+  expect(front.printMirrored, 'and reads true from the front').toBe(false);
   expect(front.next, 'next date is below').toBeGreaterThan(0);
   expect(front.windowX, 'window at 3 o\'clock').toBeGreaterThan(0);
   expect(front.waxing.x, 'the moon comes in from the left').toBeLessThan(0);

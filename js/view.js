@@ -227,10 +227,7 @@
   function applySide() {
     const m = mirrored(), flip = m ? "scale(-1 1)" : "", dial = $("dial"), onPlan = side === "face";
     R.scene.setAttribute("transform", flip);
-    for (const t of R.scene.querySelectorAll("text")) {   // printing stays readable in the mirror
-      if (!t.dataset.base) t.dataset.base = t.getAttribute("transform");
-      t.setAttribute("transform", m ? `${t.dataset.base} scale(-1 1)` : t.dataset.base);
-    }
+    svg.classList.toggle("fromback", !m);
     for (const n of labG.querySelectorAll("line,circle")) n.setAttribute("transform", flip);
     for (const t of labG.querySelectorAll("text")) t.setAttribute("text-anchor", m ? "end" : "start");
     if (onPlan) {

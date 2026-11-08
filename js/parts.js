@@ -38,6 +38,7 @@ window.CalibreParts = function (ctx) {
     const part = (key, p, need) => { const o = tagPart(el("g", { transform: at(p) }, scene), key, true); if (need) needs(o, need); return o; };
     // date ring: a thin printed ring with 31 teeth on its inside edge. The drawing is the back of the movement, where
     // the ring turns clockwise and its window is on the left; each number sits upright as it reaches the window.
+    // Printing faces the dial, so every printed label is mirrored here and reads true in the mirrored Front view.
     const ring = part("dateRing", Cd, "date");
     R().dateRing = el("g", {}, ring);
     let teeth = "";
@@ -51,7 +52,7 @@ window.CalibreParts = function (ctx) {
     for (let k = 0; k < 31; k++) {
       const a = 180 - k * 360 / 31, rr = (d.ringTeeth + d.ringOut) / 2;
       const tx = el("text", { class: "ringnum", "font-size": 0.62, "text-anchor": "middle", "dominant-baseline": "central",
-        transform: `rotate(${f4(a)}) translate(${f4(rr)} 0) rotate(180)` }, R().dateRing);
+        transform: `rotate(${f4(a)}) translate(${f4(rr)} 0) rotate(180) scale(-1 1)` }, R().dateRing);
       tx.textContent = String(k + 1);
     }
     // fixed date window marker: 3 o'clock from the front, so on the left from the back
@@ -92,7 +93,7 @@ window.CalibreParts = function (ctx) {
     el("path", { d: star + "Z", class: "steel", "stroke-width": sw }, R().dayStar);
     for (let k = 0; k < 7; k++) {
       const tx = el("text", { class: "ringnum", "font-size": 0.42, "text-anchor": "middle", "dominant-baseline": "central",
-        transform: `rotate(${f4(-90 + k * 360 / 7)}) translate(${f4(d.dayDiscR + 0.18)} 0) rotate(90)` }, R().dayStar);
+        transform: `rotate(${f4(-90 + k * 360 / 7)}) translate(${f4(d.dayDiscR + 0.18)} 0) rotate(90) scale(-1 1)` }, R().dayStar);
       tx.textContent = GL.DAYS[k];
     }
     el("path", { d: rectPath(-0.62, -(d.dayDiscR + 0.5), 0.62, -(d.dayDiscR - 0.15)), class: "window", "stroke-width": "1.2" }, ds);
@@ -349,7 +350,7 @@ window.CalibreParts = function (ctx) {
     let mst = ""; for (let k = 0; k < 24; k++) { const a = k * Math.PI / 12, r = k % 2 ? 1.5 : 2.5; mst += (k ? "L" : "M") + f4(r * Math.cos(a)) + " " + f4(r * Math.sin(a)); }
     el("path", { d: mst + "Z", class: "steel", "stroke-width": sw }, R().monthStar);
     CX.MONTHS.forEach((m, k) => el("text", { class: "disclbl", "font-size": "0.75", "text-anchor": "middle",
-      transform: `rotate(${f4(-90 + k * 30)}) translate(${f4(pg.camR - 1.15)} 0) rotate(90)` }, R().monthStar).textContent = m);
+      transform: `rotate(${f4(-90 + k * 30)}) translate(${f4(pg.camR - 1.15)} 0) rotate(90) scale(-1 1)` }, R().monthStar).textContent = m);
     el("path", { d: CM.circ(0.3), class: "hole", "stroke-width": sw }, msn);
     const cam = tagPart(needs(el("g", { transform: at(pg.cam) }, scene), "program"), "programCam", true);
     R().cam = el("g", {}, cam);

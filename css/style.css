@@ -184,6 +184,7 @@ input.tc{width:52px;font-family:var(--f-mono);font-size:14px;padding:3px 5px;bor
 .crownbody{fill:var(--brass-fill);stroke:var(--brass)}
 .column{fill:var(--steel);stroke:none}
 .face #dial{width:172px;height:172px;display:block}
+#plan.fromback .ringnum,#plan.fromback .disclbl,#plan.fromback .moonbody{opacity:.45}
 #plan #dial{pointer-events:none;opacity:.85}
 #plan #dial *{vector-effect:none}
 .face.onplan .facemin{visibility:hidden}
