@@ -101,11 +101,10 @@ window.CalibreParts = function (ctx) {
     // moon disc: 59 teeth, two painted moons, under a window with two humps
     const md = part("moonDisc", d.moonDisc, "moon");
     R().moonDisc = el("g", {}, md);
-    const mws = CM.wheelShape(CX.MOON_TEETH, d.moonM, 0.3), ms = d.moonR / 2.36;   // painted moons scale with the disc
+    const mws = CM.wheelShape(CX.MOON_TEETH, d.moonM, d.moonMate), wr = d.moonWindowR, orbit = wr * CX.MOON_ORBIT;
     el("path", { d: mws.ring + CM.circ(0.01), class: "moonsky", "stroke-width": sw, "fill-rule": "nonzero", transform: `rotate(${f4(-d.moonPhase)})` }, R().moonDisc);
-    for (const a of [0, 180]) el("circle", { cx: f4(1.35 * ms * Math.cos(a * D2R)), cy: f4(1.35 * ms * Math.sin(a * D2R)), r: 0.62 * ms, class: "moonbody" }, R().moonDisc);
-    const ap = 1.35 * ms, hr = 0.62 * ms;
-    el("path", { d: `M${f4(-ap)} ${f4(-ap + 0.1)}A${hr} ${hr} 0 0 1 0 ${f4(-ap + 0.1)}A${hr} ${hr} 0 0 1 ${f4(ap)} ${f4(-ap + 0.1)}`, class: "window", "stroke-width": "1.2", fill: "none" }, md);
+    for (const a of [0, 180]) el("circle", { cx: f4(orbit * Math.cos(a * D2R)), cy: f4(orbit * Math.sin(a * D2R)), r: f4(wr * CX.MOON_SIZE), class: "moonbody" }, R().moonDisc);
+    el("path", { d: CX.moonAperture(wr, 0, 0), class: "window", "stroke-width": "1.2", fill: "none" }, md);
 
     // keyless works: crown wheel, stem, winding and sliding pinions, setting lever and yoke, quick-set and setting wheels
     const cw = part("crownWheel", d.crownWheel);

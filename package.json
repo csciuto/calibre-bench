@@ -7,7 +7,9 @@
     "test:unit": "node --test 'tests/*.test.js'",
     "test:e2e": "playwright test",
     "screenshot": "UPDATE_PREVIEW=1 playwright test e2e/smoke.spec.js --project=desktop",
-    "test:all": "npm test && npm run test:e2e"
+    "test:all": "npm test && npm run test:e2e",
+    "test:mutants": "node tests/mutants.js",
+    "help:update": "UPDATE_HELP=1 playwright test e2e/help.spec.js --project=desktop --grep 'help images'"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",

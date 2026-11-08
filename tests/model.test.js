@@ -71,6 +71,14 @@ test('moon finger moves the disc exactly one tooth a day; day finger gets the st
   near(X.dial.dayPush.vals.at(-1), 180 / 7, 0.01 * 180 / 7);
 });
 
+test('the moon finger still moves exactly one tooth with the disc at either aperture', () => {
+  for (const spot of Object.keys(CX.MOON_SPOTS)) {
+    const d = CX.buildGeometry(P, G, spot).dial;
+    near(d.moonPush.vals.at(-1), 360 / CX.MOON_TEETH, 1e-6, spot);
+    assert.ok(d.moonPush.vals.some((v, i) => v > 0 && i < d.moonPush.vals.length - 1), `${spot}: finger touches before midnight`);
+  }
+});
+
 test('calendar month lengths by type', () => {
   assert.equal(CX.monthLength('simple', 1, 2027), 31);
   assert.equal(CX.monthLength('annual', 1, 2028), 30);

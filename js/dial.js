@@ -56,12 +56,11 @@ window.CalibreDial = function (ctx) {
     if (L.moon) {
       const m = L.moon;
       // the usual aperture: a dome with two humps along the bottom, and the disc's moon sliding behind them
-      const R = m.r * 1.25, o = R / 2, y = m.y + o;
-      const d = `M${f4(m.x - R)} ${f4(y)}A${f4(R)} ${f4(R)} 0 0 1 ${f4(m.x + R)} ${f4(y)}A${f4(o)} ${f4(o)} 0 0 0 ${f4(m.x)} ${f4(y)}A${f4(o)} ${f4(o)} 0 0 0 ${f4(m.x - R)} ${f4(y)}Z`;
+      const d = CX.moonAperture(m.R, m.x, m.y);
       el("path", { d, class: "dmoonsky" }, dial);
       el("path", { d }, el("clipPath", { id: "dmoonclip" }, dial));
-      H.moon = el("circle", { r: f4(o * 0.85), class: "dmoonlit" }, el("g", { "clip-path": "url(#dmoonclip)" }, dial));
-      H.moonAt = { x: m.x, y, o };
+      H.moon = el("circle", { r: f4(m.R * CX.MOON_SIZE), class: "dmoonlit" }, el("g", { "clip-path": "url(#dmoonclip)" }, dial));
+      H.moonAt = { x: m.x, y: m.y, o: m.R * CX.MOON_ORBIT };
     }
     if (L.smallSeconds) H.ss = hand(8.5, 2.5, 0.9, "dhs");
     if (f.chrono) { H.cm = hand(8.5, 2, 1.1, "dhc"); H.ch = hand(8.5, 2, 1.1, "dhc"); }

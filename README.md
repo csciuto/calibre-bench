@@ -34,6 +34,8 @@ npm run test:e2e     # Playwright
 npm run screenshot   # refreshes preview.png
 ```
 
+`help.html` shows what the app does, in pictures drawn by the app. Each claim on it is a test in `e2e/claims.spec.js`, and each picture is fingerprinted: if the drawing changes, the tests fail until `npm run help:update` is run and the page is checked by eye. `npm run test:mutants` breaks the app on purpose and fails if any break goes unnoticed; add a break with each new feature.
+
 The unit tests (`tests/model.test.js`) back the app's "worked out … checked by the tests" claims: exact train ratios, half a tooth per beat, no tooth passing through a pallet stone, the date finger's timing, calendar month lengths, crown, chronograph and automatic-winding behavior, and that every citation in the glossary resolves.
 
 ## Layout

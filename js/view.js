@@ -223,21 +223,22 @@
   const V = { cx: 10, cy: 3, k: 20 };
   // The model is drawn from the back. Front is that drawing mirrored; Face is Front with the dial on top.
   let side = "back";
+  const dialEl = $("dial");   // kept by reference: redrawing the plan detaches it while it's on the plan
   const mirrored = () => side !== "back";
   function applySide() {
-    const m = mirrored(), flip = m ? "scale(-1 1)" : "", dial = $("dial"), onPlan = side === "face";
+    const m = mirrored(), flip = m ? "scale(-1 1)" : "", onPlan = side === "face";
     R.scene.setAttribute("transform", flip);
     svg.classList.toggle("fromback", !m);
     for (const n of labG.querySelectorAll("line,circle")) n.setAttribute("transform", flip);
     for (const t of labG.querySelectorAll("text")) t.setAttribute("text-anchor", m ? "end" : "start");
     if (onPlan) {
       // sized so the dial's date window lands on the ring's
-      const w = (X.dial.ringTeeth + X.dial.ringOut) / 2 / 33.75 * 100;
-      for (const [k, v] of Object.entries({ x: -G.mc[0] - w / 2, y: G.mc[1] - w / 2, width: w, height: w })) dial.setAttribute(k, f4(v));
-      R.dialLayer.appendChild(dial);
-    } else if (dial.parentNode !== $("face")) {
-      for (const k of ["x", "y", "width", "height"]) dial.removeAttribute(k);
-      $("face").insertBefore(dial, $("ampm"));
+      const w = X.dial.dialScale * 100;
+      for (const [k, v] of Object.entries({ x: -G.mc[0] - w / 2, y: G.mc[1] - w / 2, width: w, height: w })) dialEl.setAttribute(k, f4(v));
+      R.dialLayer.appendChild(dialEl);
+    } else if (dialEl.parentNode !== $("face")) {
+      for (const k of ["x", "y", "width", "height"]) dialEl.removeAttribute(k);
+      $("face").insertBefore(dialEl, $("ampm"));
     }
     if (onPlan) labG.setAttribute("display", "none"); else labG.removeAttribute("display");
     $("face").classList.toggle("onplan", onPlan);
@@ -249,7 +250,7 @@
     side = next;
     if (mirrored() !== was) V.cx = -V.cx;
     applySide();
-    if (next === "face") { const r = (X.dial.ringTeeth + X.dial.ringOut) / 2 / 33.75 * 50; fitBox(G.mc[0] - r, G.mc[1] - r, G.mc[0] + r, G.mc[1] + r); }
+    if (next === "face") { const r = X.dial.dialScale * 50; fitBox(G.mc[0] - r, G.mc[1] - r, G.mc[0] + r, G.mc[1] + r); }
   }
   function applyView() {
     const w = svg.clientWidth || 800, h = svg.clientHeight || 500;
@@ -767,6 +768,8 @@
     crownHint();
   }
   function applyFeatures() {
+    const spot = (CX.dialLayout(W.features()).moon || {}).spot;
+    if (spot && spot !== X.dial.moonSpot) rebuild();
     applyVisibility(); updateCamShape(); applyView(); buildDial(); syncControls();
     if (!card.hidden && C.mode === "part" && !GL.present(C.key, W.features())) closeCard(false);
     else if (!card.hidden && C.mode === "part") openPart(C.key, {});
@@ -833,7 +836,7 @@
 
   function rebuild() {
     const view = { ...V };
-    G = CM.build(P); X = CX.buildGeometry(P, G); draw(); renderTable();
+    G = CM.build(P); X = CX.buildGeometry(P, G, (CX.dialLayout(W.features()).moon || {}).spot); draw(); renderTable();
     ref = CM.refState(P, G);
     const probe = CM.state(P, G, 600);
     handSign = { m: Math.sign(probe.center - ref.center) || 1, h: Math.sign(probe.hour - ref.hour) || 1, s: Math.sign(probe.fourth - ref.fourth) || 1 };

@@ -141,6 +141,19 @@
 
   // ---------- moon ----------
   const SYNODIC = 29.530588853, MOON_TEETH = 59;
+  // The aperture: a dome of radius R with two humps along its base. The moon orbits the base's midpoint, which is
+  // the disc's center, at MOON_ORBIT * R: wholly behind a hump at new moon, wholly clear of them at full. Model values.
+  const MOON_ORBIT = 0.6, MOON_SIZE = 0.32;
+  // Where the aperture can go on the dial (y of its base, dial units): the disc is built directly behind it.
+  const MOON_SPOTS = { top: { y: -18.3, R: 9.4 }, bottom: { y: 15, R: 5.75 } };
+  function moonAperture(R, x, y) {
+    // Each hump runs from a cusp at the middle up over the moon's hiding place and meets the dome part way up its side,
+    // so the moon can only come out on its inner side. Proportions searched against the rules on the help page.
+    const a = n => n.toFixed(4), peak = 0.7 * R, top = 0.38 * R, side = 0.3 * R, edge = Math.sqrt(R * R - side * side);
+    const arc = (rx, ry, px, py) => `A${a(rx)} ${a(ry)} 0 0 0 ${a(px)} ${a(py)}`;
+    return `M${a(x - edge)} ${a(y - side)}A${a(R)} ${a(R)} 0 0 1 ${a(x + edge)} ${a(y - side)}`
+      + arc(edge - peak, top - side, x + peak, y - top) + arc(peak, top, x, y) + arc(peak, top, x - peak, y - top) + arc(edge - peak, top - side, x - edge, y - side) + "Z";
+  }
   const NEW_MOON_2000 = Date.UTC(2000, 0, 6, 18, 14);
   function moonAgeAt(date) { const d = (date.getTime() - NEW_MOON_2000) / 86400000; return ((d % SYNODIC) + SYNODIC) % SYNODIC; }
   // A 59-tooth disc carries two moons, so one lunation is 29.5 teeth (one tooth per day).
@@ -456,7 +469,7 @@
   }
 
   // ---------- geometry for the dial side, chronograph module, automatic and calendar program ----------
-  function buildGeometry(P, G) {
+  function buildGeometry(P, G, moonSpot) {
     const at = (o, r, deg) => [o[0] + r * Math.cos(deg * D2R), o[1] + r * Math.sin(deg * D2R)];
     const Cd = G.mc, g = { dial: {}, chrono: {}, move: {}, auto: {}, prog: {} }, d = g.dial;
     const T = P.teeth, mHW = G.mpMod;
@@ -501,10 +514,18 @@
     // Moon disc: 59 teeth pushed one a day by a finger, then a jumper finishes the step. Its teeth have to be coarse
     // enough, and the finger short enough, that after the snap the finger is clear before it reaches the next tooth;
     // a fine 59-tooth wheel gets pushed several teeth. Module, finger and timing are model values found by search.
-    d.moonM = 0.14; d.moonR = d.moonM * MOON_TEETH / 2; d.moonFinger = 3.2; d.moonPhase = 0.76;
-    d.moonRa = CM.wheelShape(MOON_TEETH, d.moonM, 0.3).Ra;
-    d.moonDisc = at(d.driver24, d.moonFinger + d.moonRa - 0.05, 105);
-    d.fingerAngles = { date: -15, day: -110, moon: 109 }; // driving wheel frame, at midnight
+    // That search was done with the disc 7.35 from the driving wheel at 105 degrees. Turning and scaling the disc,
+    // its finger and its teeth together about the driving wheel keeps the push exact and lets the disc sit behind the aperture.
+    d.moonSpot = moonSpot || "top";
+    d.dialScale = (d.ringTeeth + d.ringOut) / 2 / 33.75;   // mm per dial unit: puts the dial's date window on the ring's
+    const spot = MOON_SPOTS[d.moonSpot], searchedRa = CM.wheelShape(MOON_TEETH, 0.14, 0.3).Ra, searchedD = 3.2 + searchedRa - 0.05;
+    d.moonDisc = [G.mc[0], G.mc[1] + spot.y * d.dialScale];
+    const toDisc = [d.moonDisc[0] - d.driver24[0], d.moonDisc[1] - d.driver24[1]], moonK = Math.hypot(toDisc[0], toDisc[1]) / searchedD;
+    const moonTurn = Math.atan2(toDisc[1], toDisc[0]) / D2R - 105;
+    d.moonM = 0.14 * moonK; d.moonMate = 0.3 * moonK; d.moonR = d.moonM * MOON_TEETH / 2; d.moonFinger = 3.2 * moonK; d.moonPhase = 0.76 - moonTurn;
+    d.moonRa = CM.wheelShape(MOON_TEETH, d.moonM, d.moonMate).Ra;
+    d.moonWindowR = spot.R * d.dialScale;
+    d.fingerAngles = { date: -15, day: -110, moon: 109 + moonTurn }; // driving wheel frame, at midnight
     // GMT: hour wheel -> intermediate (reverses) -> GMT wheel on the center (same direction, half speed)
     d.gmtInter = at(Cd, CM.centerDistance(mHW, T.hourW, 20), 230);
     d.gmtInterZ = 20; d.gmtInterPZ = 10; d.gmtWheelZ = 40;
@@ -800,7 +821,7 @@
     }
     return { t0, dt, vals };
   }
-  function moonPoly(d) { return CM.wheelShape(MOON_TEETH, d.moonM, 0.3).outline.pts.map(([r, a]) => [r * Math.cos(a), r * Math.sin(a)]); }
+  function moonPoly(d) { return CM.wheelShape(MOON_TEETH, d.moonM, d.moonMate).outline.pts.map(([r, a]) => [r * Math.cos(a), r * Math.sin(a)]); }
   function dayStarPoly(d) { const p = []; for (let k = 0; k < 14; k++) { const a = k * Math.PI / 7, r = k % 2 ? d.dayStarR * 0.55 : d.dayStarR; p.push([r * Math.cos(a), r * Math.sin(a)]); } return p; }
   const datePushAt = (tb, tod) => {
     if (tod < tb.t0) return 0;
@@ -849,14 +870,13 @@
     if (f.perpetual) { const mw = L.windows.find(w => w.content === "monthyear"); L.leap = { x: (mw.x0 + mw.x1) / 2, y: mw.y1 + 2.2 }; }
     if (f.pr) L.pr = { x: 0, y: -8, r: 16, a0: -135, a1: -45 };
     if (f.moon) {
-      if (f.chrono) L.moon = { x: 0, y: 13.5, r: 4.6, inside: "chronoHours" };
-      else if (f.pr) L.moon = f.central ? { x: 0, y: 21, r: 7.5 } : { x: 0, y: 13.5, r: 4.6, inside: "smallSeconds" };
-      else L.moon = { x: 0, y: -21, r: 7.5 };
+      const spot = f.chrono || f.pr ? "bottom" : "top";   // the registers and the reserve fan take the top
+      L.moon = { x: 0, y: MOON_SPOTS[spot].y, R: MOON_SPOTS[spot].R, spot };
     }
     return L;
   }
 
-  return { ringBlocks, dateFingerTip, datePushAt, fingerTip, wheelBlocks, dayStarPoly, moonPoly, minuteFingerTip, minuteDrivePoly, insidePoly, CONFIGS, CHRONO_OK, CAL_TYPES, MONTHS, WRIST, AUTO, KEYLESS, MOON_TEETH, SYNODIC, DEFAULT_OPTS,
+  return { moonAperture, MOON_ORBIT, MOON_SIZE, MOON_SPOTS, ringBlocks, dateFingerTip, datePushAt, fingerTip, wheelBlocks, dayStarPoly, moonPoly, minuteFingerTip, minuteDrivePoly, insidePoly, CONFIGS, CHRONO_OK, CAL_TYPES, MONTHS, WRIST, AUTO, KEYLESS, MOON_TEETH, SYNODIC, DEFAULT_OPTS,
            config, features, allowed, chronoAllowed, crownPositions, quickSet, crownAction,
            barrelTurnsPerCrownTurn, hoursPerCrownTurn, barrelTurnsPerRotorTurn, rotorRate, rotorAngle, rotorDirection,
            monthLength, calendarStep, camSectors, camIndex, leapGregorian, leapJulian,

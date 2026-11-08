@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calibre Bench help</title>
+<style>
+:root{--ink:#1e2421;--muted:#5d665f;--sheet:#fbfbf7;--line:#cfd4c8;--brass:#8c6418}
+@media (prefers-color-scheme:dark){:root{--ink:#e8ebe6;--muted:#a3aca5;--sheet:#14181a;--line:#2c3439;--brass:#d9b25e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--sheet);color:var(--ink);font:16px/1.5 system-ui,sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 64px}
+h1{margin:0 0 4px;font-size:30px}
+h2{margin:40px 0 10px;font-size:21px;border-top:1px solid var(--line);padding-top:20px}
+a{color:var(--brass)}
+ul{margin:10px 0 0;padding-left:20px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+figure{margin:0}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:4px;background:#fff}
+figcaption{font-size:13px;color:var(--muted);margin-top:3px}
+.strip{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;margin-top:12px}
+.strip.three{grid-template-columns:repeat(3,minmax(0,1fr));max-width:560px}
+.play{width:220px;max-width:100%}
+@media (max-width:560px){.strip{grid-template-columns:repeat(4,minmax(0,1fr))}.strip.three{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Calibre Bench help</h1>
+  <a href="./">Back to the app</a>
+
+  <h2>Back, Front, Face</h2>
+  <div class="row">
+    <figure><img src="help/img/view-back.png" alt="The movement from the back" loading="lazy"><figcaption>Back</figcaption></figure>
+    <figure><img src="help/img/view-front.png" alt="The movement from the front" loading="lazy"><figcaption>Front</figcaption></figure>
+    <figure><img src="help/img/view-face.png" alt="The dial over the movement" loading="lazy"><figcaption>Face</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>From the back, printing is mirrored and faded</li>
+    <li data-claim>From the front, printing reads normally</li>
+    <li data-claim>Face lays the dial over the movement and taps go through</li>
+  </ul>
+
+  <h2>Moon phase</h2>
+  <div class="row">
+    <figure class="play"><img data-frames="moon-dial-0,moon-dial-4,moon-dial-8,moon-dial-11,moon-dial-15,moon-dial-19,moon-dial-22,moon-dial-26" src="help/img/moon-dial-0.png" alt="The moon crossing the aperture, animated"><figcaption>One lunation</figcaption></figure>
+    <figure class="play"><img data-frames="moon-disc-0,moon-disc-4,moon-disc-8,moon-disc-11,moon-disc-15,moon-disc-19,moon-disc-22,moon-disc-26" src="help/img/moon-disc-0.png" alt="The moon wheel turning, animated"><figcaption>The wheel behind it</figcaption></figure>
+    <figure><img src="help/img/moon-face.png" alt="A full moon in the aperture with the wheel lined up behind it" loading="lazy"><figcaption>Full moon, wheel behind the aperture</figcaption></figure>
+  </div>
+  <div class="strip">
+    <figure><img src="help/img/moon-dial-0.png" alt="Day 0" loading="lazy"><figcaption>Day 0</figcaption></figure>
+    <figure><img src="help/img/moon-dial-4.png" alt="Day 4" loading="lazy"><figcaption>Day 4</figcaption></figure>
+    <figure><img src="help/img/moon-dial-8.png" alt="Day 8" loading="lazy"><figcaption>Day 8</figcaption></figure>
+    <figure><img src="help/img/moon-dial-11.png" alt="Day 11" loading="lazy"><figcaption>Day 11</figcaption></figure>
+    <figure><img src="help/img/moon-dial-15.png" alt="Day 15" loading="lazy"><figcaption>Day 15</figcaption></figure>
+    <figure><img src="help/img/moon-dial-19.png" alt="Day 19" loading="lazy"><figcaption>Day 19</figcaption></figure>
+    <figure><img src="help/img/moon-dial-22.png" alt="Day 22" loading="lazy"><figcaption>Day 22</figcaption></figure>
+    <figure><img src="help/img/moon-dial-26.png" alt="Day 26" loading="lazy"><figcaption>Day 26</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>New moon is hidden</li>
+    <li data-claim>Full moon shows whole</li>
+    <li data-claim>Moon appears and disappears on its right side first</li>
+    <li data-claim>Moon wheel sits behind the aperture</li>
+  </ul>
+
+  <h2>Date</h2>
+  <div class="strip three">
+    <figure><img src="help/img/date-1.png" alt="9 pm, 15 in the window" loading="lazy"><figcaption>9 pm</figcaption></figure>
+    <figure><img src="help/img/date-2.png" alt="11:42 pm, the finger is pushing" loading="lazy"><figcaption>11:42 pm</figcaption></figure>
+    <figure><img src="help/img/date-3.png" alt="Just after midnight, 16 in the window" loading="lazy"><figcaption>12:20 am</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Next date comes up from below</li>
+    <li data-claim>Date ring shows through the date window</li>
+  </ul>
+
+  <h2>Power and crown</h2>
+  <div class="row">
+    <figure class="play"><img src="help/img/power-down.png" alt="The face panel with a Run down banner and a Wind button" loading="lazy"><figcaption>Run down</figcaption></figure>
+    <figure class="play"><img src="help/img/crown-out.png" alt="The face panel reading Stopped: crown pulled out" loading="lazy"><figcaption>Crown out</figcaption></figure>
+  </div>
+  <ul>
+    <li data-claim>Running down shows a Wind button</li>
+    <li data-claim>Pulling the crown out stops the watch</li>
+  </ul>
+</main>
+<script>
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  for (const img of document.querySelectorAll('img[data-frames]')) {
+    const frames = img.dataset.frames.split(',').map((n) => `help/img/${n}.png`);
+    frames.forEach((f) => { new Image().src = f; });
+    let i = 0;
+    setInterval(() => { i = (i + 1) % frames.length; img.src = frames[i]; }, 700);
+  }
+}
+</script>
+</body>
+</html>
