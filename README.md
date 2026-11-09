@@ -4,6 +4,8 @@ An interactive plan drawing of a mechanical watch movement, laid flat on millime
 
 **Live:** [corey.sciu.to/calibre-bench](https://corey.sciu.to/calibre-bench/)
 
+How it's built: [ARCHITECTURE.md](ARCHITECTURE.md).
+
 Built with [Claude](https://claude.ai) and [Claude Code](https://claude.com/claude-code).
 
 ## What's in it
