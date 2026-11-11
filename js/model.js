@@ -297,6 +297,25 @@
     const liftHalfTime = Math.asin(Math.min(1, halfLift / p.amplitude)) / omega;
     return { beatsPerSec, freq, omega, liftHalfTime };
   }
+  // When, within a beat, the three sounds of a tick happen: seconds from the balance passing the middle of its swing.
+  //   unlock:  the impulse pin reaches the fork (the start of the lift)
+  //   impulse: the escape wheel stops recoiling and starts to push (the lowest point of the contact trace)
+  //   drop:    the wheel's largest jump, as a tooth leaves one stone and the next falls onto the other
+  // The lever positions come from the contact trace; each is turned back into a balance angle, then a time.
+  function tickSounds(p, g) {
+    const bt = balanceTiming(p), tb = g.escTrace.A, n = tb.xs.length - 1;
+    let iMin = 0, iDrop = 1, jump = 0;
+    for (let i = 1; i <= n; i++) {
+      if (tb.xs[i] < tb.xs[iMin]) iMin = i;
+      if (tb.xs[i] - tb.xs[i - 1] > jump) { jump = tb.xs[i] - tb.xs[i - 1]; iDrop = i; }
+    }
+    const timeAt = i => {
+      let a = -p.lift / 2, b = p.lift / 2;                   // lever angle rises with the balance's: bisect
+      for (let k = 0; k < 40; k++) { const m = (a + b) / 2; if (leverFromBalance(p, m) < tb.lam[i]) a = m; else b = m; }
+      return Math.asin(Math.max(-1, Math.min(1, (a + b) / 2 / p.amplitude))) / bt.omega;
+    };
+    return { unlock: -bt.liftHalfTime, impulse: timeAt(iMin), drop: timeAt(iDrop) };
+  }
   function state(p, g, t) {
     const T = p.teeth, A = p.angles, bt = balanceTiming(p);
     const theta = p.amplitude * Math.sin(bt.omega * t); // deg
@@ -360,5 +379,5 @@
 
   return { D2R, DEFAULTS, params, centerDistance, gearOutline, wheelShape, pinionShape, escapeShape,
            circ, armsPath, build, refState, leverFromBalance, stonesAt, teethAt, overlap, escapeContact, traceBeat, meshDrivenFromDriver, meshDriverFromDriven,
-           balanceTiming, state, hands, readHands, periods, rateError, powerReserveHours, polar, add };
+           balanceTiming, tickSounds, state, hands, readHands, periods, rateError, powerReserveHours, polar, add };
 });

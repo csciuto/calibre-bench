@@ -28,12 +28,13 @@ js/
   complications.js  pure: the watch as a state machine (crown, winding, setting, calendars, GMT, moon,
                     chronograph, automatic winding, power reserve) and the geometry for each zone
   glossary.js       every part and term explained in two layers, with 53 sources and a marker on each statement
+  sound.js          the tick: three short synthesized sounds a beat (unlock, impulse, drop), and which are due when
   view.js           draws the model into the SVG, wires up controls, tooltips and the drill-down card
   parts.js          drawing for the complication parts (levers, cams, calendar wheels, chronograph)
   dial.js           the dial: laid out for the chosen features, hands driven by the watch
 tests/
   model.test.js     unit tests (Node's test runner) behind every "worked out" claim
-  mutants.js        breaks the app 64 ways, one at a time, and fails if a test doesn't notice
+  mutants.js        breaks the app 69 ways, one at a time, and fails if a test doesn't notice
 e2e/                Playwright: app flows, help-page claims, picture fingerprints, smoke, axe
 ```
 
@@ -88,11 +89,31 @@ transforms; geometry is rebuilt only when tooth counts, modules or features chan
 - `npm run test:e2e`: Playwright at desktop and phone size. `claims.spec.js` turns each claim on the help page
   into a test; `help.spec.js` fingerprints each help picture from exactly what was drawn, so a drawing change
   fails until `npm run help:update` is run and the page is checked by eye. Axe on every page.
-- `npm run test:mutants`: 64 deliberate breaks (a moon twice too fast, a misplaced aperture…); each must be
+- `npm run test:mutants`: 69 deliberate breaks (a moon twice too fast, a misplaced aperture…); each must be
   caught by a claim or unit test.
 - Pushing to `main` runs the unit and browser tests in GitHub Actions (the shared workflow in
   [csciuto/app-template](https://github.com/csciuto/app-template)); only if they pass is the site stamped with
   a version and published to GitHub Pages.
+
+## Sources, checked
+
+Every statement in the app is marked: a numbered source, *model value*, *worked out*, or *about this app*. In
+November 2026 every source link was fetched and each cited statement compared with the text of its source
+(255 statements, 53 sources). Three sources that couldn't be opened to check were replaced with ones that could,
+a handful of statements were moved to the source that actually says them or relabeled as this app's own choice,
+and nothing is left marked *citation needed*. Re-check a source whenever a statement citing it changes.
+
+## Sound and links
+
+- **The tick.** `CM.tickSounds` reads three moments out of the escapement's contact trace for a beat: the start
+  of the lift (unlock), the end of the escape wheel's recoil (impulse begins), and the wheel's largest jump
+  (drop). `sound.js` synthesizes a few milliseconds of struck metal for each (decaying tones plus noise, seeded)
+  and each animation frame schedules the sounds due in the next tenth of a second on the audio clock. Slowing
+  the watch pulls the three apart. Off by default; silent above 1× and when the watch is stopped.
+- **Setups in the address.** Layout, options, beat rate, amplitude and side are written to the address as
+  `#w=complete&chrono=flyback&…` (only what differs from the plain watch) and read back on load or when the
+  address changes. The decoder keeps only known names and values; whether an option fits a layout is decided by
+  `setOption`, exactly as for a click.
 
 ## Known limits
 

@@ -14,6 +14,7 @@ Built with [Claude](https://claude.ai) and [Claude Code](https://claude.com/clau
 - **Back, Front, Face.** The drawing is the back of the movement; Front mirrors it, and Face lays the dial over it so it zooms with the drawing.
 - **Winding and setting.** Crown with three positions, sliding pinion, setting lever and yoke as rigid parts, quick-set, hacking stop lever, power reserve.
 - **Complications.** Date, day-date, moon phase, GMT, complete calendar; simple, annual and perpetual calendar types; retrograde date; central seconds; a 7750-style cam-operated chronograph with oscillating pinion (standard or flyback); automatic winding with reversing wheels; power reserve differential.
+- **Sound and sharing.** A tick built from the escapement's own three events (unlock, impulse, drop), off until you press ♪. The address holds the setup, so a watch can be sent as a link.
 - **Explanations.** Hover for a part's name, press **?** and tap for the full card, or follow the power from the crown. Every statement is marked: a numbered source, *model value*, *worked out*, or *citation needed*.
 
 Tooth counts and modules are illustrative, not taken from a real calibre. The app says so wherever it uses one.
@@ -51,6 +52,7 @@ js/glossary.js        part and term explanations with sources (pure)
 js/view.js            drawing the movement, controls, pan and zoom, info cards
 js/parts.js           the complication parts (calendar, chronograph, automatic winding, ...)
 js/dial.js            the dial and hands
+js/sound.js           the tick: three synthesized sounds a beat, timed by the model
 ```
 
 ## Deploying and versioning

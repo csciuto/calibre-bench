@@ -247,7 +247,7 @@
   }
   function setSide(next) {
     const was = mirrored();
-    side = next;
+    side = next; saveLink();
     if (mirrored() !== was) V.cx = -V.cx;
     applySide();
     if (next === "face") { const r = X.dial.dialScale * 50; fitBox(G.mc[0] - r, G.mc[1] - r, G.mc[0] + r, G.mc[1] + r); }
@@ -292,6 +292,14 @@
       const hit = kept.some(k => box.x0 < k.x1 + pad && box.x1 > k.x0 - pad && box.y0 < k.y1 + pad && box.y1 > k.y0 - pad);
       if (off || hit) g.setAttribute("visibility", "hidden"); else kept.push(box);
     }
+  }
+  // The watch face sits under the toolbar. The toolbar grows a second row when the Chronograph and Winding
+  // buttons both show, so the face moves down with it instead of covering the Back / Front / Face buttons.
+  function placeFace() {
+    const fc = document.getElementById("face"), tools = document.querySelector(".tools");
+    if (!fc || !tools) return;
+    const wide = !window.matchMedia || window.matchMedia("(min-width: 1000px)").matches;   // narrow: CSS puts the face along the bottom
+    fc.style.top = wide ? (tools.offsetTop + tools.offsetHeight + 8) + "px" : "";
   }
   // Fit a box (mm) into the drawing, keeping clear of the toolbar on top and the readout below.
   function fitBox(x0, y0, x1, y1, covered) {
@@ -489,7 +497,7 @@
     e.preventDefault();
     if (ACTION_HINT[part.dataset.part] && !helpOn) actOn(part.dataset.part); else openPart(part.dataset.part, { opener: part, keyboard: true });
   });
-  if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => applyView()).observe(svg);
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => { placeFace(); applyView(); }).observe(svg);
 
   let tipKey = null;
   function hoverTip(e) {
@@ -705,11 +713,11 @@
   const scrub = $("scrub");
   scrub.addEventListener("input", () => { const base = Math.floor(W.handTime() / 86400) * 86400; W.setMovementTime(base + +scrub.value); render(); });
   const ampI = $("amp");
-  ampI.addEventListener("input", () => { P.amplitude = +ampI.value; $("ampv").textContent = P.amplitude + "°"; });
+  ampI.addEventListener("input", () => { P.amplitude = +ampI.value; $("ampv").textContent = P.amplitude + "°"; saveLink(); });
   $("bph").addEventListener("change", e => {
     P.bph = +e.target.value;
     document.querySelector(".sub").textContent = `Swiss lever · ${P.bph.toLocaleString("en-US")} A/h · plan view, laid flat`;
-    rebuild();
+    rebuild(); saveLink();
   });
 
   // ---------- complications and crown controls ----------
@@ -756,7 +764,7 @@
     setDis("chrOn", !a.chrono); setDis("chrFly", !a.flyback);
     $("chrOff").checked = W.opts.chrono === "off"; $("chrOn").checked = W.opts.chrono === "standard"; $("chrFly").checked = W.opts.chrono === "flyback";
     $("chrNote").innerHTML = marked(a.chrono ? (f.flyback ? "Flyback: press reset while running to restart from zero in one press {{wikiFlyback}}." : "Modeled on the Valjoux 7750: running seconds at 9, 30-minute counter at 12, 12-hour counter at 6 {{mono7750}}.")
-      : `Not offered with ${CX.config(W.config).name.toLowerCase()} here. The 7750 family covers date {{grail7753}}, day-date and date + GMT {{mono7750}}, and full calendar with moon {{grail7751}}; time only is this app's choice {{?}}.`);
+      : `Not offered with ${CX.config(W.config).name.toLowerCase()} here. The 7750 family covers date {{grail7753}}, day-date and date + GMT {{mono7750}}, and full calendar with moon {{grail7751}}; time only is this app's choice {{app}}.`);
     for (const c of CX.CAL_TYPES) { setDis("cal-" + c.id, c.id !== "simple" && !a.calType); $("cal-" + c.id).checked = f.calType === c.id; }
     const CAL_NOTES = { simple: "Every month gets 31 days, so it needs correcting after shorter months {{wikiAnnual}}.",
       annual: "Knows 30- and 31-day months, and needs correcting only on 1 March {{wikiAnnual}}.",
@@ -772,7 +780,8 @@
     $("moonRow").hidden = !f.moon; $("dayRow").hidden = !f.dayPusher; $("chronoRow").hidden = !f.chrono; $("faceChrono").hidden = !f.chrono; $("corrRow").hidden = !f.program; $("corrYear").hidden = !f.perpetual;
     $("vChr").hidden = !(f.chrono || f.central); $("vChr").textContent = f.chrono ? "Chronograph" : "Center seconds";
     $("vAuto").hidden = !(f.auto || f.pr);
-    crownHint();
+    placeFace();
+    crownHint(); saveLink();
   }
   function applyFeatures() {
     const spot = (CX.dialLayout(W.features()).moon || {}).spot;
@@ -784,7 +793,7 @@
   }
   function doTurn(dir) {
     const res = W.turnCrown(dir * (W.crownPos === 2 ? 1 / 12 : 0.5));
-    crownHint(res.action === "none" ? "Nothing is connected that way in this position. {{app}}" : res.action === "wind" && res.full ? (res.slipping ? "Full: the slipping bridle lets the spring slide along the barrel wall {{wikiAuto}}." : "The mainspring is full; the crown won't turn further {{?}}.") : "");
+    crownHint(res.action === "none" ? "Nothing is connected that way in this position. {{app}}" : res.action === "wind" && res.full ? (res.slipping ? "Full: the slipping bridle lets the spring slide along the barrel wall {{wikiAuto}}." : "The mainspring is full; the crown won't turn further {{app}}.") : "");
     render();
   }
   for (const [id, dir] of [["turnFwd", 1], ["turnBack", -1]]) {
@@ -1030,9 +1039,36 @@
       C.lastStats = performance.now();
     }
   }
+  // ---------- the tick ----------
+  // Off until asked for. Each frame schedules the escapement's sounds for the next tenth of a second of real
+  // time, at the moments the model gives them, so the sound and the drawing agree at any speed up to 1×.
+  const SND = { on: false, ctx: null, player: null, upTo: null, times: null, key: "", count: 0 };
+  $("tick").onclick = () => {
+    SND.on = !SND.on;
+    $("tick").setAttribute("aria-pressed", SND.on);
+    if (SND.on && !SND.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) { SND.ctx = new AC(); SND.player = CalibreSound.createPlayer(SND.ctx); }
+    }
+    if (SND.on && SND.ctx && SND.ctx.state === "suspended") SND.ctx.resume();
+    SND.upTo = null;
+  };
+  function scheduleTicks() {
+    if (!SND.on || !SND.player || !running || speed > 1 || W.stopped()) { SND.upTo = null; return; }
+    const key = P.bph + "/" + P.amplitude;
+    if (key !== SND.key) { SND.times = CM.tickSounds(P, G); SND.key = key; }
+    const now = W.tau, ahead = 0.1 * speed;
+    if (SND.upTo === null || SND.upTo < now || SND.upTo > now + 2 * ahead) SND.upTo = now;      // just switched on, or time jumped
+    for (const s of CalibreSound.due(SND.times, P.bph / 3600, SND.upTo, now + ahead)) {
+      SND.player.play(s.kind, SND.ctx.currentTime + (s.at - now) / speed);
+      SND.count++;
+    }
+    SND.upTo = now + ahead;
+  }
   function frame(now) {
     const dt = Math.min(0.25, (now - last) / 1000); last = now;
     if (running) W.tick(dt * speed);
+    scheduleTicks();
     render();
     requestAnimationFrame(frame);
   }
@@ -1047,9 +1083,37 @@
   $("sourceList").innerHTML = Object.entries(GL.SOURCES).map(([id, src]) =>
     `<li id="src-${esc(id)}" value="${SOURCE_NUM[id]}"><a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.title)}</a></li>`).join("");
 
-  W.setConfig("date", false);
-  rebuild(); applyFeatures(); fitAll(); render();
+  // The address holds the setup (layout, options, beat rate, amplitude, side), so a watch can be sent to someone.
+  var linkReady = false;   // var: saveLink can be reached before this line runs
+  function saveLink() {
+    if (!linkReady) return;
+    const text = CX.encodeSetup({ config: W.config, opts: W.opts, bph: P.bph, amplitude: P.amplitude, side });
+    const hash = text ? "#" + text : "";
+    if (hash !== location.hash) history.replaceState(null, "", hash || location.pathname + location.search);
+  }
+  // Put a setup from link text on the bench. Whether an option fits the layout is the watch's call, as when clicked.
+  function applySetup(shared) {
+    W.setConfig((shared && shared.config) || "date", false);
+    for (const [key, off] of [["chrono", "off"], ["calType", "simple"], ["retro", false], ["central", false], ["pr", false], ["auto", false], ["wrist", "off"]]) W.setOption(key, off);
+    const bph = (shared && shared.bph) || CX.SETUP_DEFAULT.bph, amp = (shared && shared.amplitude) || CX.SETUP_DEFAULT.amplitude;
+    P.bph = bph; $("bph").value = String(bph); document.querySelector(".sub").textContent = `Swiss lever · ${bph.toLocaleString("en-US")} A/h · plan view, laid flat`;
+    P.amplitude = amp; ampI.value = String(amp); $("ampv").textContent = amp + "°";
+    // the chronograph first: it decides which of the other options the layout still allows
+    if (shared) for (const key of ["chrono", "calType", "retro", "central", "pr", "auto", "wrist"]) if (key in shared.opts) W.setOption(key, shared.opts[key]);
+    rebuild(); applyFeatures();
+    setSide((shared && shared.side) || CX.SETUP_DEFAULT.side);
+  }
+  applySetup(CX.decodeSetup(location.hash.slice(1)));
+  fitAll(); render();
+  linkReady = true; saveLink();
+  // a link pasted into a tab that already has the bench open
+  window.addEventListener("hashchange", () => {
+    const text = location.hash.slice(1);
+    if (text === CX.encodeSetup({ config: W.config, opts: W.opts, bph: P.bph, amplitude: P.amplitude, side })) return;
+    const shared = CX.decodeSetup(text);
+    if (shared || text === "") { applySetup(shared); render(); saveLink(); }
+  });
   requestAnimationFrame(frame);
   // hook for the smoke test; harmless in the viewer
-  window.__calibre = { setTime: v => { W.setMovementTime(v); render(); }, pause: () => { if (running) runB.click(); }, params: P, card: C, watch: () => W };
+  window.__calibre = { sound: SND, setTime: v => { W.setMovementTime(v); render(); }, pause: () => { if (running) runB.click(); }, params: P, card: C, watch: () => W };
 })();

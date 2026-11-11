@@ -145,3 +145,71 @@ test('glossary: every citation, related part, stat term and tour stop resolves',
   const ctx = { P, G, X, CX, w, r: w.read(), st: CM.state(P, G, 0), per: CM.periods(P), ref: CM.refState(P, G) };
   for (const [k, e] of Object.entries(GL.PARTS)) for (const [, , term] of e.stats(ctx)) if (term) assert.ok(GL.TERMS[term], `${k} stat term ${term}`);
 });
+
+test('a setup round-trips through link text, and the plain watch has a clean address', () => {
+  const plain = { config: 'date', opts: { chrono: 'off', calType: 'simple', retro: false, central: false, auto: false, pr: false, wrist: 'off' }, bph: 28800, amplitude: 270, side: 'back' };
+  assert.equal(CX.encodeSetup(plain), '');
+  assert.equal(CX.decodeSetup(''), null);
+  const fancy = { config: 'complete', opts: { chrono: 'flyback', calType: 'perpetual', retro: false, central: false, auto: true, pr: true, wrist: 'walking' }, bph: 36000, amplitude: 300, side: 'face' };
+  const text = CX.encodeSetup(fancy);
+  assert.equal(text, 'w=complete&chrono=flyback&cal=perpetual&pr&auto&wrist=walking&bph=36000&amp=300&side=face');
+  assert.deepEqual(CX.decodeSetup(text), { config: 'complete', opts: { chrono: 'flyback', calType: 'perpetual', pr: true, auto: true, wrist: 'walking' }, bph: 36000, amplitude: 300, side: 'face' });
+  // every layout and calendar type has a link form that reads back
+  for (const c of CX.CONFIGS) assert.equal((CX.decodeSetup(CX.encodeSetup({ ...plain, config: c.id })) || { config: 'date' }).config || 'date', c.id);
+});
+
+test('link text is not trusted: unknown names and values are dropped', () => {
+  assert.equal(CX.decodeSetup('src-wikiFlyback'), null);                       // a source anchor, not a setup
+  assert.equal(CX.decodeSetup('w=tourbillon&bph=99999&amp=9000&side=inside&chrono=on&cal=lunar&wrist=__proto__'), null);
+  assert.deepEqual(CX.decodeSetup('w=dategmt&bph=28801&amp=272&retro&retro=1&x=<script>'), { config: 'dategmt', opts: { retro: true } });
+  // an option the layout can't have is refused by the watch itself, as when clicked
+  const W = CX.createWatch(P, CX.initFromDate(new Date(2026, 0, 1)));
+  W.setConfig('time');
+  const s = CX.decodeSetup('retro&cal=perpetual&chrono=flyback');
+  for (const k of ['chrono', 'calType', 'retro']) W.setOption(k, s.opts[k]);
+  assert.equal(W.opts.retro, false);
+  assert.equal(W.opts.calType, 'simple');
+});
+
+const SND = require('../js/sound.js');
+
+test('the tick: unlock, then impulse, then drop, inside the lift, the same every beat', () => {
+  const t = CM.tickSounds(P, G), bt = CM.balanceTiming(P);
+  assert.ok(t.unlock < t.impulse && t.impulse < t.drop, `order ${JSON.stringify(t)}`);
+  near(t.unlock, -bt.liftHalfTime, 1e-12);
+  assert.ok(t.drop <= bt.liftHalfTime + 1e-9, 'the drop falls within the lift');
+  assert.ok(t.drop > 0, 'the drop comes after the balance passes the middle');
+  // at 28,800 A/h and 270 degrees the whole lift takes about 8 ms
+  near((t.drop - t.unlock) * 1000, 7.7, 1.5);
+  // a lazier balance (smaller amplitude) takes longer through the lift: the sounds spread out
+  const lazy = CM.params({ amplitude: 200 }), gl = CM.build(lazy);
+  const tl = CM.tickSounds(lazy, gl);
+  assert.ok(tl.drop - tl.unlock > t.drop - t.unlock);
+});
+
+test('the tick: which sounds are due is exact, with none lost or doubled between frames', () => {
+  const t = CM.tickSounds(P, G), bps = P.bph / 3600;
+  const all = SND.due(t, bps, 10.06, 11.06);                    // from between two beats
+  assert.equal(all.length, 3 * bps);                           // one second: 8 beats, three sounds each
+  assert.deepEqual(all.slice(0, 3).map(s => s.kind), ['unlock', 'impulse', 'drop']);
+  // the same second cut into uneven frames gives the same list
+  const cuts = [10.06, 10.073, 10.08, 10.31, 10.3101, 10.77, 11.06], parts = [];
+  for (let i = 1; i < cuts.length; i++) parts.push(...SND.due(t, bps, cuts[i - 1], cuts[i]));
+  assert.deepEqual(parts, all);
+  assert.deepEqual(SND.due(t, bps, 5, 5), []);
+});
+
+test('the tick: three short clicks, the drop the loudest, the same each time', () => {
+  const rms = a => Math.sqrt(a.reduce((s, v) => s + v * v, 0) / a.length);
+  const peak = a => a.reduce((m, v) => Math.max(m, Math.abs(v)), 0);
+  const [u, i, d] = SND.KINDS.map(k => SND.samples(k, 48000));
+  assert.deepEqual(SND.KINDS, ['unlock', 'impulse', 'drop']);
+  assert.ok(peak(u) < peak(i) && peak(i) < peak(d) && peak(d) <= 1.0001);
+  assert.ok(rms(u) < rms(i) && rms(i) < rms(d));
+  for (const s of [u, i, d]) {
+    assert.equal(s.length, 48000 * SND.LENGTH_MS / 1000);
+    assert.ok(peak(s.slice(-48)) < 0.02 * peak(s), 'faded out by the end');
+    assert.ok(Math.abs(s[0]) === 0, 'starts from silence');
+  }
+  assert.deepEqual(Array.from(SND.samples('drop', 48000)), Array.from(d));
+});

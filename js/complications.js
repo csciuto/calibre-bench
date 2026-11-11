@@ -877,7 +877,45 @@
     return L;
   }
 
-  return { moonAperture, MOON_ORBIT, MOON_SIZE, MOON_SPOTS, ringBlocks, dateFingerTip, datePushAt, fingerTip, wheelBlocks, dayStarPoly, moonPoly, minuteFingerTip, minuteDrivePoly, insidePoly, CONFIGS, CHRONO_OK, CAL_TYPES, MONTHS, WRIST, AUTO, KEYLESS, MOON_TEETH, SYNODIC, DEFAULT_OPTS,
+  // ---------- a setup as link text ----------
+  // What makes one watch on the bench different from another: its layout, options, beat rate, balance amplitude
+  // and which side is showing. Only what differs from a fresh page is written, so the plain watch has a clean address.
+  const BEAT_RATES = [18000, 21600, 28800, 36000], SIDES = ["back", "front", "face"];
+  const SETUP_DEFAULT = { config: "date", bph: 28800, amplitude: 270, side: "back" };
+  function encodeSetup(s) {
+    const q = [], o = s.opts || {};
+    if (s.config !== SETUP_DEFAULT.config) q.push("w=" + s.config);
+    if (o.chrono && o.chrono !== "off") q.push("chrono=" + o.chrono);
+    if (o.calType && o.calType !== "simple") q.push("cal=" + o.calType);
+    for (const k of ["retro", "central", "pr", "auto"]) if (o[k]) q.push(k);
+    if (o.auto && o.wrist && o.wrist !== "off") q.push("wrist=" + o.wrist);
+    if (s.bph !== SETUP_DEFAULT.bph) q.push("bph=" + s.bph);
+    if (s.amplitude !== SETUP_DEFAULT.amplitude) q.push("amp=" + s.amplitude);
+    if (s.side !== SETUP_DEFAULT.side) q.push("side=" + s.side);
+    return q.join("&");
+  }
+  // Read link text back. Only known names and values survive; whether an option fits the layout is decided
+  // later, by setOption, exactly as when a visitor clicks it. Returns null when nothing in the text is a setup.
+  function decodeSetup(text) {
+    const out = { opts: {} };
+    let any = false;
+    for (const part of String(text || "").split("&")) {
+      const [k, v = ""] = part.split("=");
+      if (k === "w" && CONFIGS.some(c => c.id === v)) out.config = v;
+      else if (k === "chrono" && (v === "standard" || v === "flyback")) out.opts.chrono = v;
+      else if (k === "cal" && CAL_TYPES.some(c => c.id === v)) out.opts.calType = v;
+      else if (["retro", "central", "pr", "auto"].includes(k) && v === "") out.opts[k] = true;
+      else if (k === "wrist" && Object.prototype.hasOwnProperty.call(WRIST, v)) out.opts.wrist = v;
+      else if (k === "bph" && BEAT_RATES.includes(+v)) out.bph = +v;
+      else if (k === "amp" && /^\d+$/.test(v) && +v >= 180 && +v <= 320 && +v % 5 === 0) out.amplitude = +v;
+      else if (k === "side" && SIDES.includes(v)) out.side = v;
+      else continue;
+      any = true;
+    }
+    return any ? out : null;
+  }
+
+  return { encodeSetup, decodeSetup, SETUP_DEFAULT, moonAperture, MOON_ORBIT, MOON_SIZE, MOON_SPOTS, ringBlocks, dateFingerTip, datePushAt, fingerTip, wheelBlocks, dayStarPoly, moonPoly, minuteFingerTip, minuteDrivePoly, insidePoly, CONFIGS, CHRONO_OK, CAL_TYPES, MONTHS, WRIST, AUTO, KEYLESS, MOON_TEETH, SYNODIC, DEFAULT_OPTS,
            config, features, allowed, chronoAllowed, crownPositions, quickSet, crownAction,
            barrelTurnsPerCrownTurn, hoursPerCrownTurn, barrelTurnsPerRotorTurn, rotorRate, rotorAngle, rotorDirection,
            monthLength, calendarStep, camSectors, camIndex, leapGregorian, leapJulian,

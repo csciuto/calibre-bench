@@ -99,7 +99,7 @@ button[aria-pressed="true"]{background:var(--brass);color:var(--sheet);border-co
 .facedown[hidden]{display:none}
 .facedown button{height:30px;padding:0 12px;font-size:13px}
 .face #ampm.stopped{color:var(--off);font-weight:600}
-.transport{grid-area:tr;display:grid;grid-template-columns:auto auto 1fr auto;gap:4px;align-items:center}
+.transport{grid-area:tr;display:grid;grid-template-columns:auto auto 1fr auto auto;gap:4px;align-items:center}
 .transport button{min-width:34px;height:32px;padding:0 8px;font-family:var(--f-body);font-size:15px;line-height:1}
 .speedlbl{text-align:center;font-size:15px}
 .big{font-family:var(--f-mono);font-size:22px;font-weight:500}

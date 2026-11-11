@@ -4,6 +4,11 @@ const { execSync } = require('child_process');
 const fs = require('fs'), os = require('os'), path = require('path');
 const ROOT = path.join(__dirname, '..');
 const BREAKS = [
+  ['tick: impulse and drop swapped', 'js/model.js', 'impulse: timeAt(iMin), drop: timeAt(iDrop)', 'impulse: timeAt(iDrop), drop: timeAt(iMin)'],
+  ['tick: sounds repeated every frame', 'js/sound.js', 'if (at > from && at <= to)', 'if (at <= to)'],
+  ['tick: the drop no louder than the unlock', 'js/sound.js', 'drop:    { level: 1.00,', 'drop:    { level: 0.20,'],
+  ['share link: beat rate not read back', 'js/complications.js', 'else if (k === "bph" && BEAT_RATES.includes(+v)) out.bph = +v;', ''],
+  ['share link: any layout name accepted', 'js/complications.js', 'if (k === "w" && CONFIGS.some(c => c.id === v)) out.config = v;', 'if (k === "w") out.config = v;'],
   ['dial moon has no size', 'js/dial.js', 'r: f4(m.R * CX.MOON_SIZE), class: "dmoonlit"', 'r: 0, class: "dmoonlit"'],
   ['dial moon not clipped to the aperture', 'js/dial.js', '"clip-path": "url(#dmoonclip)"', '"clip-path": "url(#nope)"'],
   ['aperture painted off the moon', 'js/dial.js', 'CX.moonAperture(m.R, m.x, m.y)', 'CX.moonAperture(m.R, m.x, m.y + 80)'],

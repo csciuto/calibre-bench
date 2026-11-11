@@ -176,3 +176,100 @@ for (const width of [400, 1050, 1200, 1600]) {
     expect(fill).toBeGreaterThan(0.35);
   });
 }
+
+test('the address follows the setup, and opening it restores the same watch @desktop', async ({ page, context }) => {
+  await page.goto('/');
+  await page.locator('#plan [data-part]').first().waitFor({ state: 'attached' });
+  expect(new URL(page.url()).hash).toBe('');                       // the plain watch: a clean address
+  await page.locator('#sideFront').click();
+  await page.locator('#cfg-complete').check();
+  await page.locator('#chrFly').check();
+  await page.locator('#cal-perpetual').check();
+  await page.locator('#windAuto').check();
+  await page.locator('#bph').selectOption('36000');
+  await expect.poll(() => new URL(page.url()).hash).toBe('#w=complete&chrono=flyback&cal=perpetual&auto&bph=36000&side=front');
+
+  const other = await context.newPage();
+  await other.goto(page.url());
+  await other.locator('#plan [data-part]').first().waitFor({ state: 'attached' });
+  await expect(other.locator('#cfg-complete')).toBeChecked();
+  await expect(other.locator('#chrFly')).toBeChecked();
+  await expect(other.locator('#cal-perpetual')).toBeChecked();
+  await expect(other.locator('#windAuto')).toBeChecked();
+  await expect(other.locator('#bph')).toHaveValue('36000');
+  await expect(other.locator('#sideFront')).toHaveAttribute('aria-pressed', 'true');
+  await expect(other.locator('.sub')).toContainText('36,000');
+  expect(await other.evaluate(() => window.__calibre.params.bph)).toBe(36000);
+
+  // back to the plain watch: a clean address again
+  await other.locator('#sideBack').click();
+  await other.locator('#cfg-date').check();
+  await other.locator('#chrOff').check();
+  await other.locator('#cal-simple').check();
+  await other.locator('#windManual').check();
+  await other.locator('#bph').selectOption('28800');
+  await expect.poll(() => new URL(other.url()).hash).toBe('');
+});
+
+test('a link asking for something a layout cannot have opens as the nearest real watch @desktop', async ({ page }) => {
+  await page.goto('/#w=time&retro&cal=perpetual&bph=1&side=upside-down');
+  await page.locator('#plan [data-part]').first().waitFor({ state: 'attached' });
+  await expect(page.locator('#cfg-time')).toBeChecked();
+  await expect(page.locator('#optRetro')).not.toBeChecked();
+  await expect(page.locator('#cal-simple')).toBeChecked();
+  await expect(page.locator('#bph')).toHaveValue('28800');
+  await expect.poll(() => new URL(page.url()).hash).toBe('#w=time');
+});
+
+test('the Back / Front / Face buttons stay clear of the watch face when the toolbar wraps @desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto('/#w=complete&chrono=flyback&auto');          // Chronograph and Winding buttons both showing
+  await expect(page.locator('#vChr')).toBeVisible();
+  await expect(page.locator('#vAuto')).toBeVisible();
+  const box = async sel => page.locator(sel).boundingBox();
+  const face = await box('#face');
+  for (const id of ['#sideBack', '#sideFront', '#sideFace']) expect((await box(id)).y + (await box(id)).height, id).toBeLessThanOrEqual(face.y);
+  await page.locator('#sideFront').click();
+  await expect(page.locator('#sideFront')).toHaveAttribute('aria-pressed', 'true');
+  // one row again: the face moves back up
+  await page.goto('/#w=time');
+  await expect.poll(async () => (await box('#face')).y).toBeLessThan(face.y);
+});
+
+test('the tick sound: off until asked for, three sounds a beat, quiet when the watch is stopped or run fast @desktop', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#plan [data-part]').first().waitFor({ state: 'attached' });
+  const tick = page.locator('#tick'), count = () => page.evaluate(() => window.__calibre.sound.count);
+  await expect(tick).toHaveAttribute('aria-pressed', 'false');
+  await page.waitForTimeout(300);
+  expect(await count()).toBe(0);
+  await tick.click();
+  await expect(tick).toHaveAttribute('aria-pressed', 'true');
+  const before = await count();
+  await page.waitForTimeout(1000);
+  const perSecond = (await count()) - before;                  // 28,800 A/h: 8 beats a second, three sounds each
+  expect(perSecond).toBeGreaterThan(18);
+  expect(perSecond).toBeLessThan(30);
+  // pulled crown: the watch stops, and so does the sound
+  await page.locator('#crownSeg input[value="2"]').check({ force: true });
+  await page.waitForTimeout(200);
+  const stopped = await count();
+  await page.waitForTimeout(400);
+  expect(await count()).toBe(stopped);
+  await page.locator('#crownSeg input[value="0"]').check({ force: true });
+  // 60x: too fast to be ticks
+  await page.locator('#faster').click();
+  await page.waitForTimeout(200);
+  const fast = await count();
+  await page.waitForTimeout(400);
+  expect(await count()).toBe(fast);
+  // 1/5x: slower beats, still three sounds each
+  await page.locator('#slower').click(); await page.locator('#slower').click();
+  const slowFrom = await count();
+  await page.waitForTimeout(1500);
+  const slow = (await count()) - slowFrom;                     // 1.6 beats a second: about 7 sounds in 1.5 s
+  expect(slow).toBeGreaterThan(3);
+  expect(slow).toBeLessThan(12);
+  await tick.click();
+  await expect(tick).toHaveAttribute('aria-pressed', 'false');
+});

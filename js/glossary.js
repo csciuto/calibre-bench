@@ -59,9 +59,9 @@
     mpFly: { title: "Montres-Passion: How a flyback chronograph works", url: "https://www.montres-passion.fr/?p=12595" },
     wsDanger: { title: "Watchscanning: The date change danger zone", url: "https://www.watchscanning.com/guides/watch-date-change-danger-zone/" },
     wsSet: { title: "Watchscanning: How to set a watch", url: "https://www.watchscanning.com/guides/how-to-set-a-watch/" },
-    hsCentral: { title: "Hourstriker: Center seconds gear train architectures", url: "https://www.hourstriker.com/learn/center-seconds-engineering-gear-train-architectures" },
-    hsLever: { title: "Hourstriker: Lever escapement", url: "https://www.hourstriker.com/learn/lever-escapement-engineering-architecture-and-kinetic-cycles" },
-    hsGMT: { title: "Hourstriker: GMT complication gear reduction", url: "https://www.hourstriker.com/learn/gmt-complication-kinematic-architecture-and-gear-reduction" },
+    wikiChrono: { title: "Wikipedia: Chronograph", url: "https://en.wikipedia.org/wiki/Chronograph" },
+    wwikiVph: { title: "Watch Wiki: Vibrations per hour", url: "https://www.watch-wiki.net/doku.php?id=4_hz" },
+    ccStutter: { title: "Caliber Corner: Stuttering seconds hand explained (indirect drive)", url: "https://calibercorner.com/stuttering-seconds-hand-explained" },
     gpChrono: { title: "Gear Patrol: How to use a chronograph", url: "https://www.gearpatrol.com/watches/a33532749/how-to-use-a-chronograph-watch/" },
     wnwSZ01: { title: "WatchProSite: Worn & Wound on the SZ01 (7750-based)", url: "https://www.watchprosite.com/page-wf.forumpost/fi-17/ti-1151776/dv-true/wf.responses.open_bLoB_s-0/" },
     awciMinute: { title: "AWCI: Minute counter jumper springs", url: "https://www.awci.com/watchmaking-excellen/minute-counter-jumper-springs/" },
@@ -156,7 +156,7 @@
       name: "Fourth wheel", kind: "Going train",
       short: "Turns once a minute, so the small seconds hand is mounted on it {{ciech,wikiTrain}}.",
       more: [
-        "A seconds hand in the middle of the dial needs either extra wheels to carry this motion to the center, or a train laid out with the fourth wheel in the center {{wikiTrain,hsCentral}}.",
+        "A seconds hand in the middle of the dial needs either extra wheels to carry this motion to the center, or a train laid out with the fourth wheel in the center {{wikiTrain,ccStutter}}.",
         "Its wheel drives the escape wheel's pinion {{wikiTrain}}. On a 7750-style chronograph, the oscillating pinion also meshes it directly {{revOsc}}."
       ],
       rel: [["driven by", "third"], ["drives", "escape"], ["drives", "oscPinion"], ["carries", "secondsDrive"]],
@@ -167,7 +167,7 @@
       name: "Escape wheel", kind: "Escapement",
       short: "The wheel with oddly shaped teeth that lets the spring's energy out one tooth at a time {{ciech,wikiTrain}}.",
       more: [
-        "In the Swiss lever escapement its teeth are club-shaped {{wikiLever,hsLever}}. Two ruby pallet stones on the lever catch them in turn {{ciech,wikiLever}}. With 15 teeth, 24° apart, each beat lets the wheel turn half that: 12° {{wikiLever}}.",
+        "In the Swiss lever escapement its teeth are club-shaped {{wikiLever}}. Two ruby pallet stones on the lever catch them in turn {{ciech,wikiLever}}. With 15 teeth {{wikiLever}}, 24° apart, each beat lets the wheel turn half that: 12° {{calc}}.",
         "As a tooth slides over a pallet's slanted face it gives the lever a push, which the lever passes to the balance {{wikiLever}}. That push is what keeps the balance swinging {{wikiTrain}}.",
         "Each 12° beat splits into 8° across the pallet stone, 2° across the tooth's own sloping face, and 2° of drop {{abbeyPallets}}. On the club tooth that face rises from the toe, which locks, back to the heel {{abbeyPallets,model}}; the front of the tooth is cut back steeply so the stone can lock against the toe {{model}}.",
         "The wheel's angle here comes from contact: the mainspring pushes it as far as the stones let it, traced as the lever swings {{app}}. So it recoils slightly as a stone unlocks: 0.05 to 0.2° here {{calc}}, against the 0.25° or so Horopedia gives as typical {{horoSwissLever}}. Tests check that no tooth ever passes through a stone {{calc}}."
@@ -184,7 +184,7 @@
         "Its two ruby stones, the entrance and exit pallets, take turns locking a tooth {{wikiLever}}. As the balance swings through the middle, the ruby impulse pin on its roller enters the lever's fork and flips it {{wikiLever,ciech}}.",
         "The lever rocks between two banking pins {{wikiLever}}. The balance only touches it briefly and swings free for most of its swing, which is what 'detached' means {{wikiLever}}.",
         "The pallet pivot sits where lines from it touch the escape wheel's tip circle 60° apart, so the stones span 2½ teeth {{abbeyPallets}}; there, swinging the lever moves the stones straight in and out of the teeth {{calc}}. Each stone covers 8° of the wheel {{abbeyPallets}}.",
-        "Each stone's locking face leans so the tooth pulls it deeper into lock, which is called draw {{abbeyPallets}}; 12° here {{model}}. Of the lever's swing, 1.5° is lock and about 7° is lift on the stone {{model}}."
+        "Each stone's locking face leans by a draw angle {{abbeyPallets}}, so the wheel's push holds the lever against its banking and the wheel has to recoil a little to unlock {{wikiLever}}; 12° here {{model}}, within the usual 11° to 15° {{wikiLever}}. Of the lever's swing, 1.5° is lock and about 7° is lift on the stone {{model}}."
       ],
       rel: [["holds", "escape"], ["flipped by", "balance"]],
       stats: ({ G, st }) => [["Swing", "±" + (G.L / D2R).toFixed(1) + "°", "lift"],
@@ -207,7 +207,7 @@
       name: "Hairspring", kind: "Regulator",
       short: "A thin spiral spring, also called the balance spring, that keeps pulling the balance back to center {{ciech,wikiBalSpring}}.",
       more: [
-        "The period of the swing is set by the spring's stiffness together with the balance's moment of inertia {{wikiBalSpring}}. For an ideal torsion oscillator that's T = 2π√(I/κ) {{?}}.",
+        "The period of the swing is set by the spring's stiffness together with the balance's moment of inertia {{wikiBalSpring}}. For an ideal torsion oscillator that's T = 2π√(I/κ) {{wikiBalWheel}}.",
         "The outer end is held by a stud on the balance cock {{wikiBalSpring}}, and the inner end turns with the balance {{ciech}}, so you can watch the coils open and close {{app}}."
       ],
       rel: [["regulates", "balance"]],
@@ -248,7 +248,7 @@
     hourWheel: {
       name: "Hour wheel", kind: "Dial side",
       short: "Turns 12 times slower than the minute hand, and carries the hour hand {{ciech}}.",
-      more: ["It shares the center with the cannon pinion, so the hour and minute hands turn about the same point {{ciech}}. On calendar and GMT watches it also drives the wheels that work them {{horoDays,hsGMT}}."],
+      more: ["It shares the center with the cannon pinion, so the hour and minute hands turn about the same point {{ciech}}. On calendar watches it also drives the wheels that work them {{horoDays}}, and here the GMT wheels too {{model}}."],
       rel: [["driven by", "minuteWheel"], ["drives", "driver24"], ["drives", "gmtInter"]],
       stats: ({ P, per }) => [["Teeth", P.teeth.hourW, "wheel"], ["One turn", fmtDur(per.hour), "period"]]
     },
@@ -285,7 +285,7 @@
       short: "A sleeve that turns with the stem and slides along it {{ciech}}. Where it sits decides whether the crown winds or sets {{ciech,horoKeyless}}.",
       more: [
         "Its square hole fits the stem's square section, so it always turns with the crown {{ciech,horoKeyless}}.",
-        "Pulling the crown pivots the setting lever, which pushes the yoke, which slides the pinion from the winding pinion to the setting train {{horoKeyless,ciech}}. Its position at the middle click, for the quick-set, follows the same idea {{?}}."
+        "Pulling the crown pivots the setting lever, which pushes the yoke, which slides the pinion from the winding pinion to the setting train {{horoKeyless,ciech}}. Here the middle click, for the quick-set, works the same way {{model}}."
       ],
       rel: [["turned by", "crown"], ["turns", "windingPinion"], ["moved by", "settingLever"], ["drives", "settingWheel"], ["drives", "quickSet"]],
       stats: ({ w, CX }) => [["Meshing with", ["winding pinion", "quick-set wheel", "setting wheel"][w.crownPos]], ["Teeth", CX.KEYLESS.slidingPinion, "pinion"]]
@@ -294,7 +294,7 @@
       name: "Crown wheel", kind: "Winding and setting",
       short: "When you wind, it passes the crown's turning on to the ratchet wheel on the barrel {{ciech,horoKeyless}}.",
       more: [
-        "It's drawn here beside the stem so you can see it mesh; the dashed line shows that it really drives the ratchet on the barrel {{app}}. Where it sits in a real movement varies {{?}}.",
+        "It's drawn here beside the stem so you can see it mesh; the dashed line shows that it really drives the ratchet on the barrel {{app}}.",
         "It changes the direction of the motion but, as an idler, not the overall ratio {{calc}}."
       ],
       rel: [["driven by", "windingPinion"], ["drives", "ratchet"]],
@@ -315,8 +315,8 @@
       name: "Setting lever", kind: "Winding and setting",
       short: "A lever that pivots when you pull the crown, and moves the parts that decide what the crown turns {{horoKeyless,ciech}}.",
       more: [
-        "The yoke rides in a groove on the sliding pinion, so moving the yoke moves the pinion {{ciech,horoKeyless}}. ETA lists a combined setting lever jumper among the parts {{eta28}}; that's what gives the clicks you feel {{?}}.",
-        "Pulling the stem turns the lever; an inclined plane on it pushes the yoke toward the center, and a spring keeps the yoke pressed against that plane {{horoKeyless}}. Here both are drawn as rigid parts on their pivots: the lever's pin stays in the stem's groove, the yoke's fork in the pinion's groove, and the plane is shaped so the yoke's follower rests on it at each click {{model}}. The tests check all three contacts {{calc}}."
+        "The yoke rides in a groove on the sliding pinion, so moving the yoke moves the pinion {{ciech,horoKeyless}}. ETA lists a combined setting lever jumper among the parts {{eta28}}.",
+        "Pulling the stem turns the lever, which switches the yoke between its positions and holds it there {{horoKeyless}}; a spring keeps the yoke against it {{sjxKeyless}}. Here both are drawn as rigid parts on their pivots: the lever's pin stays in the stem's groove, the yoke's fork in the pinion's groove, and an inclined plane on the lever is shaped so the yoke's follower rests on it at each click {{model}}. The tests check all three contacts {{calc}}."
       ],
       rel: [["moved by", "crown"], ["shifts", "slidingPinion"], ["selects", "settingWheel"], ["selects", "quickSet"]],
       stats: ({ w, CX }) => [["Crown position", ["pushed in", "first click", "pulled out"][w.crownPos], "crownPositions"], ["Clicks on this watch", String(CX.crownPositions(w.features()).length)]]
@@ -346,7 +346,7 @@
       name: "Stop lever (hacking)", kind: "Regulator",
       short: "A lever that touches the balance and stops it when the crown is pulled out to set the time {{mpStop}}.",
       more: [
-        "With the crown in the time-setting position, a lever blocks the balance, sometimes through an intermediate part {{mpStop}}. With the balance held, the train and the seconds hand stop {{wsSet}}.",
+        "With the crown in the time-setting position, a lever blocks the balance, sometimes through an intermediate part {{mpStop}}. With the balance held, the train and the seconds hand stop {{mpStop,wsSet}}.",
         "Not every movement has one: some older movements and budget automatics don't hack {{wsSet}}."
       ],
       rel: [["stops", "balance"]],
@@ -368,9 +368,9 @@
       name: "Date ring", kind: "Calendar", needs: "date",
       short: "A ring printed with all 31 dates {{ciech}}. One number shows through the date window {{ciech}}.",
       more: [
-        "The driving finger catches a tooth on the ring and the jumper snaps it to the next position {{ciech}}. It has one tooth per date {{?}}.",
+        "The driving finger catches a tooth on the ring and the jumper snaps it to the next position {{ciech}}. Here it has one tooth per date {{model}}.",
         "A simple date can't tell how long a month is, so after shorter months you correct it {{wikiAnnual}}. Annual and perpetual calendars do it for you {{wikiAnnual}}.",
-        "Setting the hands back past midnight doesn't take the date back here, and rocking the hands across midnight walks it forward {{?}}."
+        "Setting the hands back past midnight doesn't take the date back here, and rocking the hands across midnight walks it forward {{app}}."
       ],
       rel: [["pushed by", "driver24"], ["corrected by", "quickSet"], ["counted by", "dateStar"]],
       stats: ({ r }) => [["Showing", String(r.dateShown)], ["Teeth", "31"], ["Moving now", r.dragging ? "yes" : "no"]]
@@ -400,17 +400,17 @@
     },
     gmtInter: {
       name: "GMT intermediate wheel", kind: "GMT", needs: "gmt",
-      short: "Part of the 2:1 reduction from the hour wheel to the 24-hour wheel {{hsGMT}}.",
-      more: ["The hour wheel drives an intermediate wheel, which drives a larger 24-hour wheel {{hsGMT}}. Here: 20 teeth with a 10-tooth pinion into 40 {{model}}, which halves the speed {{calc}}.",
+      short: "Part of the 2:1 reduction from the hour wheel, once in 12 hours, to the 24-hour wheel {{calc}}.",
+      more: ["Here the hour wheel drives an intermediate wheel, which drives a larger 24-hour wheel: 20 teeth with a 10-tooth pinion into 40 {{model}}, which halves the speed {{calc}}.",
              "Passing through one extra wheel keeps the 24-hour hand turning the same way as the hour hand {{calc}}."],
       rel: [["driven by", "hourWheel"], ["drives", "gmtWheel"]],
       stats: ({ X, per }) => [["Wheel / pinion", `${X.dial.gmtInterZ} / ${X.dial.gmtInterPZ}`, "pinion"], ["One turn", fmtDur(per.hour * X.dial.gmtInterZ / 40), "period"]]
     },
     gmtWheel: {
       name: "24-hour (GMT) wheel", kind: "GMT", needs: "gmt",
-      short: "Carries a hand that goes round once a day, so you can read a second time zone on a 24-hour scale {{hsGMT}}.",
+      short: "Carries a hand that goes round once a day, so you can read a second time zone on a 24-hour scale {{grail2893}}.",
       more: [
-        "On the ETA 2893-2 the 24-hour hand is quick-set with the crown at its middle position, independently of the hour hand {{grail2893}}. Here it moves an hour per click {{?}}.",
+        "On the ETA 2893-2 the 24-hour hand is quick-set with the crown at its middle position, independently of the hour hand {{grail2893}}. Here it moves an hour per click {{model}}.",
         "Here it starts on UTC {{app}}."
       ],
       rel: [["driven by", "gmtInter"], ["corrected by", "quickSet"]],
@@ -435,7 +435,7 @@
       short: "Carries the stopwatch seconds hand in the center of the dial {{grail7753,revOsc}}.",
       more: [
         "When engaged it turns once a minute, stepping with the balance {{calc}}. A heart-shaped cam on it is what the reset hammer strikes to send the hand back to zero {{sjxReset}}.",
-        "Once a minute a finger advances the minute counter {{awciMinute}}; here the finger is on this wheel {{?}}."
+        "Once a minute a finger advances the minute counter {{awciMinute}}; here the finger is on this wheel {{model}}."
       ],
       rel: [["driven by", "oscPinion"], ["advances", "minuteCounter"], ["reset by", "hammer"], ["held by", "brake"]],
       stats: ({ w, X }) => [["Teeth", String(X.chrono.runnerZ), "wheel"], ["Elapsed", fmtChrono(Math.max(0, w.chrono.elapsed))], ["State", w.chrono.running ? "running" : w.chrono.hammer ? "reset" : "stopped"]]
@@ -454,7 +454,7 @@
     startPusher: {
       name: "Start/stop pusher", kind: "Chronograph", needs: "chrono",
       short: "The pusher at 2 o'clock {{gpChrono}}. Press to start the stopwatch, press again to stop it {{gpChrono}}.",
-      more: ["Stopping doesn't reset; press start again and timing carries on {{gpChrono}}. Tap it in the drawing or use the Start/stop button {{app}}."],
+      more: ["Stopping doesn't reset: that is the other pusher's job {{gpChrono}}. Press start again and the hand carries on from where it stopped {{wikiChrono}}. Tap it in the drawing or use the Start/stop button {{app}}."],
       rel: [["moves", "switchCam"]],
       stats: ({ w }) => [["Next press", w.chrono.running ? "stops" : "starts"], ["Presses so far", String(w.chrono.column)]]
     },
@@ -512,7 +512,7 @@
     brake: {
       name: "Brake", kind: "Chronograph", needs: "chrono",
       short: "Clamps the chronograph seconds wheel when the stopwatch is stopped {{revCam}}.",
-      more: ["Press stop and the brake comes down on the wheel, so the seconds hand stops {{revCam}}. It lifts when the stopwatch starts again {{?}}."],
+      more: ["Press stop and the brake comes down on the wheel, so the seconds hand stops {{revCam}}. It lifts and frees the wheel when the stopwatch starts {{revCam}}."],
       rel: [["holds", "chronoRunner"], ["worked by", "switchCam"]],
       stats: ({ w }) => [["On", !w.chrono.running && !w.chrono.hammer ? "yes" : "no"], ["Stopwatch", w.chrono.running ? "running" : "stopped"]]
     },
@@ -526,7 +526,7 @@
     },
     hourCounter: {
       name: "Hour counter", kind: "Chronograph", needs: "chrono",
-      short: "Counts stopwatch hours up to 12, on the register at 6 o'clock {{mono7750}}. It moves continuously, not in steps {{wrt7750}}.",
+      short: "Counts stopwatch hours up to 12, on the register at 6 o'clock {{mono7750}}. It is geared straight to the barrel, so it creeps round instead of stepping {{wrt7750}}.",
       more: ["In the 7750 the hour counter is driven from the barrel; it slips when the chronograph is stopped and runs when it's engaged {{wrt7750,mono7750}}. The ring drawn around its arbor is that slipping clutch {{app}}.",
              "At 30° an hour it moves half a degree a minute, slow enough to look still {{calc}}."],
       rel: [["driven by", "hourDrive"], ["held by", "hourLock"], ["reset by", "hourHammer"]],
@@ -574,17 +574,17 @@
     // ---------- central seconds ----------
     secondsDrive: {
       name: "Central seconds drive", kind: "Central seconds", needs: "central",
-      short: "Carries the fourth wheel's once-a-minute turn across to the center of the dial {{hsCentral}}.",
+      short: "Carries a once-a-minute turn across to the center of the dial; here it is taken from the fourth wheel {{model}}.",
       more: [
-        "A fine pinion on the fourth wheel's arbor drives a large, thin intermediate wheel, which drives a pinion on the central seconds arbor {{hsCentral}}. Here: 12 → 88 → 12 {{model}}, which gives exactly one turn a minute {{calc}}."
+        "In an indirect drive a wheel of the going train, commonly the third, drives a separate pinion that carries the seconds hand {{ccStutter}}. Here it comes off the fourth wheel through a large, thin intermediate wheel: 12 → 88 → 12 {{model}}, which gives exactly one turn a minute {{calc}}."
       ],
       rel: [["turns with", "fourth"], ["drives", "secondsWheel"]],
       stats: ({ X }) => [["Teeth", `${X.chrono.csPinionZ} → ${X.chrono.csInterZ} → ${X.chrono.csPinionZ}`, "wheel"], ["One turn", "60 s", "period"]]
     },
     secondsWheel: {
       name: "Central seconds pinion", kind: "Central seconds", needs: "central",
-      short: "Carries the seconds hand in the middle of the dial, turning once a minute {{hsCentral}}.",
-      more: ["A friction spring, also called a tension spring, presses on this extra train to take up the gear play that would otherwise make the hand stutter {{hsCentral}}."],
+      short: "Carries the seconds hand in the middle of the dial, turning once a minute {{ccStutter}}.",
+      more: ["Driven indirectly, the hand is prone to hesitating or stalling; a brake spring pressing on the pinion steadies it, and too much tension on that spring costs the balance amplitude {{ccStutter}}."],
       rel: [["driven by", "secondsDrive"]],
       stats: ({ r }) => [["Seconds hand", (r.secondsHand / 6).toFixed(3) + " s"], ["Friction spring", "on"]]
     },
@@ -643,10 +643,10 @@
     completeCalendar: { name: "Complete calendar", short: "Day, date, month and moon phase together, also called a triple calendar {{grail7751,biwTissot}}. It's a simple calendar: 31 days every month {{union7751}}.",
       more: ["Mechanical ones are mostly built on the Valjoux 7751, used by Ball, Longines, Omega, Sinn and Maurice Lacroix among others {{grailRef7751}}. They aren't cheap: Atlantic's 7751 chronograph is 3,350 CHF {{wwAtlantic}}.",
              "Cheap ones tend to be quartz, like Tissot's on the ETA 255 quartz movement, which sells used for about $200 to $300 when running {{biwTissot}}.",
-             "Day, date and moon without the month is rare; when a watch drops something to make room for the moon, it's usually the day, leaving date and moon {{?}}."] },
+             "Here the moon comes with the date alone or with the full calendar; day and date with the moon but no month isn't offered {{app}}."] },
     bph: { name: "Beat rate", short: "How many beats the balance makes an hour {{wikiBalWheel}}. A beat is one swing between reversals, so a full cycle is two beats {{wikiBalWheel}}.",
       more: ["Before the 1970s watches typically ran at 18,000 an hour; today 21,600 and 28,800 are common, and a few run at 36,000 {{wikiBalWheel}}. 28,800 is 8 beats a second {{ciech}}.",
-             "Watchmakers write it A/h, alternations per hour {{?}}."] },
+             "Movement references write it A/h {{grail7753}}: vibrations, each half a swing, per hour {{wwikiVph}}."] },
     amplitude: { name: "Amplitude", short: "How far the balance swings, measured in degrees {{ccAmp}}.",
       more: ["Excellent amplitude on a modern watch is about 270–315°, measured fully wound; it's usually higher dial-up than in vertical positions {{ccAmp}}. Low amplitude can point to a mainspring problem, and such watches generally lose time {{ccAmp}}.",
              "Here it changes how long each push lasts, because the balance only touches the lever over a fixed angle {{app}}."] },
@@ -657,7 +657,7 @@
              "At 1/50 speed you can watch every beat {{app}}."] },
     module: { name: "Module", short: "The size of a gear's teeth: pitch diameter in millimeters divided by the number of teeth {{wikiGear}}.",
       more: ["From that definition, two meshing gears sit m × (z₁ + z₂) ÷ 2 apart {{calc}}. Every distance in the drawing comes from this {{app}}.",
-             "Meshing gears need matching tooth sizes {{?}}. The modules here, 0.05–0.14 mm, are model values {{model}}."] },
+             "Each meshing pair here shares one module {{app}}. The modules here, 0.05–0.14 mm, are model values {{model}}."] },
     pinion: { name: "Pinion", short: "A small gear driven by a bigger wheel; its teeth are called leaves {{ciech,sjxGears}}.",
       more: ["Each wheel driving a pinion raises the speed {{ciech}}. Watch pinions can have as few as six to ten leaves {{sjxGears}}, and are made of hardened steel {{horoCenter}}."] },
     wheel: { name: "Wheel", short: "A larger gear that drives the next, smaller gear in line {{ciech}}; the center wheel, for instance, is traditionally gilded brass {{horoCenter}}." },
@@ -668,7 +668,7 @@
     powerReserve: { name: "Power reserve", short: "How long the watch keeps running before it needs winding {{wikiPR}}.",
       more: ["Here it's one barrel turn's time × the turns the mainspring can unwind {{calc}}; 6.5 turns is a model value {{model}}."] },
     rate: { name: "Rate", short: "How many seconds a day the watch gains or loses {{app}}.",
-      more: ["Here it counts only the gear ratios {{app}}. In a real watch temperature affects the balance spring and so the rate {{wikiBalSpring}}; so does position {{?}}."] },
+      more: ["Here it counts only the gear ratios {{app}}. In a real watch temperature affects the balance spring and so the rate {{wikiBalSpring}}, and the watch's position changes the amplitude {{ccAmp}}."] },
     profile: { name: "Tooth shape", short: "For a long time watches used cycloidal tooth profiles {{sjxGears}}.",
       more: ["An epicycloid is the curve traced by a circle rolling around another without slipping {{sjxGears}}. Cycloidal gears give smooth transmission with little contact pressure {{sjxGears}}.",
              "The trade-off: cycloidal gears only work properly if the center spacing is exactly right {{wikiGear}}, while involute gears are much less sensitive to it {{sjxGears}}. Here the wheel tooth tips are rolled by a circle half the mating pinion's radius {{model}}."] },
@@ -682,7 +682,7 @@
       more: ["When the reset hammer strikes it, the cam takes the shortest way back to zero, turning in either direction {{sjxReset}}."] },
     chronograph: { name: "Chronograph", short: "A stopwatch built into the watch: one pusher starts and stops it, another resets it {{gpChrono}}.",
       more: ["This one follows the Valjoux 7750: cam-operated with an oscillating pinion {{mono7750,revOsc}}, running seconds at 9, 30-minute counter at 12, 12-hour counter at 6 {{mono7750}}.",
-             "The 7750 family includes day-date {{mono7750}}, date (7753) {{grail7753}}, GMT with date (7754) {{mono7750}} and full calendar with moon phase (7751) {{grail7751,mono7750}}. A time-only version and leaving out date + moon are this app's choices {{?}}."] },
+             "The 7750 family includes day-date {{mono7750}}, date (7753) {{grail7753}}, GMT with date (7754) {{mono7750}} and full calendar with moon phase (7751) {{grail7751,mono7750}}. A time-only version and leaving out date + moon are this app's choices {{app}}."] },
     calType: { name: "Calendar type", short: "How much the date mechanism knows about the calendar {{app}}.",
       more: ["Simple: 31 days every month, so you correct it after each shorter month, five times a year {{calc}}. Annual: handles 30 and 31 days and needs correcting only on 1 March {{wikiAnnual}}, an idea Patek Philippe patented in 1996 {{wikiAnnual}}.",
              "Perpetual: also handles leap years, and won't need adjusting until 2100, which isn't a leap year {{wikiAnnual}}. Very few watches handle that rule too {{qpPerp}}. At 3600× you can watch the date jump from 28 straight to 1 at the end of February {{app}}."] },
@@ -693,11 +693,11 @@
     automatic: { name: "Automatic winding", short: "Winding by a weight that swings as you move {{wikiAuto}}.",
       more: ["Some designs wind only in one swing direction; others wind in both {{wikiAuto}}. Here it uses reversing wheels, the most widespread system {{sjxWinding}}."] },
     bridle: { name: "Slipping bridle", short: "Holds the mainspring to the barrel wall by friction until it's fully wound, then lets it slide, so it can't be overwound {{wikiAuto}}.",
-      more: ["A hand-wound watch's crown simply stops turning when the spring is full {{?}}."] },
+      more: ["Self-winding goes on after the spring is full, which is why it needs one {{wikiAuto}}. Here a hand-wound watch's crown just stops turning when the spring is full {{app}}."] },
     differential: { name: "Differential", short: "Gears with three shafts, where one turns at the average of the other two {{wikiDiff}}.",
       more: ["Used for arithmetic, the third shaft's angle is the sum or difference of the other two {{wikiDiff}}. Joseph Williamson's 1720 clock used one {{wikiDiff}}."] },
-    centralSeconds: { name: "Central seconds", short: "The seconds hand on the center of the dial instead of on its own small dial {{hsCentral}}.",
-      more: ["Indirect central seconds carry the fourth wheel's motion to the center through an extra train with a friction spring; direct designs put the fourth wheel in the center {{hsCentral}}. A chronograph uses the center for its stopwatch hand {{grail7753}}."] },
+    centralSeconds: { name: "Central seconds", short: "The seconds hand on the center of the dial, on the same axis as the hour and minute hands, instead of on its own small dial {{wikiTrain}}.",
+      more: ["Indirect central seconds drive a separate seconds pinion from the going train, steadied by a brake spring {{ccStutter}}; direct designs put the fourth wheel in the center {{wikiTrain}}. A chronograph uses the center for its stopwatch hand {{grail7753}}."] },
     lunation: { name: "Lunation", short: "One cycle of the moon's phases {{mpMoon}}. The synodic month averages 29.53059 days {{mpMoon}}.",
       more: ["That's 29 days, 12 hours, 44 minutes {{calc}}. A 59-tooth moon wheel counts 29.5, about 44 minutes short per lunation {{mpMoon}}."] }
   };
